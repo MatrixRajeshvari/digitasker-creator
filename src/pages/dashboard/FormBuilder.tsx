@@ -573,33 +573,38 @@ const FormBuilder = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with improved design */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 mb-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => navigate("/dashboard/forms")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Create New Form
+              {id ? "Edit Form" : "Create New Form"}
             </h1>
-            <p className="text-sm text-muted-foreground">Design your form by adding and configuring elements</p>
+            {id && <p className="text-sm text-muted-foreground">Update your existing form</p>}
           </div>
         </div>
-        <div className="flex gap-3 w-full sm:w-auto">
-          <Button 
-            variant={previewMode ? "default" : "outline"} 
-            className="flex-1 sm:flex-none"
-            onClick={() => setPreviewMode(!previewMode)}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            Preview
-          </Button>
-          <Button 
-            className="flex-1 sm:flex-none bg-primary hover:bg-primary/90"
-            onClick={saveForm} 
-            disabled={loading}
-          >
+        <div className="flex gap-2 w-full sm:w-auto">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant={previewMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setPreviewMode(!previewMode)}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  {previewMode ? "Exit Preview" : "Preview"}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Test how your form will appear to users</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Button onClick={saveForm} disabled={loading} size="sm">
             {loading ? (
               <>
                 <span className="animate-spin mr-2">◌</span>
@@ -615,40 +620,40 @@ const FormBuilder = () => {
         </div>
       </div>
 
-      {/* Tabs with improved styling */}
+      {/* Tabs */}
       <Tabs defaultValue="builder" className="w-full">
-        <TabsList className="w-full grid grid-cols-3 mb-6 p-1 bg-muted/60">
-          <TabsTrigger value="builder" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <FileText className="mr-2 h-4 w-4" />
+        <TabsList className="grid w-full grid-cols-3 mb-2">
+          <TabsTrigger value="builder" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
             Form Builder
           </TabsTrigger>
-          <TabsTrigger value="settings" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <SettingsIcon className="mr-2 h-4 w-4" />
-            Settings
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <SettingsIcon className="h-4 w-4" />
+            Form Settings
           </TabsTrigger>
-          <TabsTrigger value="theme" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <Sparkles className="mr-2 h-4 w-4" />
-            Theme
+          <TabsTrigger value="theme" className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Theme & Style
           </TabsTrigger>
         </TabsList>
 
         {/* Builder Tab */}
-        <TabsContent value="builder" className="mt-0">
+        <TabsContent value="builder" className="mt-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Form Elements Panel */}
             {!previewMode && (
               <div className="lg:col-span-3 space-y-4">
-                <Card className="border shadow-sm">
+                <Card className="border border-border/60 shadow-sm">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-medium">Elements</CardTitle>
-                    <CardDescription>Add elements to your form</CardDescription>
+                    <CardTitle className="text-base font-medium">Form Elements</CardTitle>
+                    <CardDescription>Drag and drop elements to build your form</CardDescription>
                   </CardHeader>
                   <CardContent className="grid grid-cols-2 gap-2">
                     {elementTypeOptions.map(type => (
                       <Button
                         key={type.value}
                         variant="outline"
-                        className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/50 transition-all"
+                        className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/30 transition-all"
                         onClick={() => addElement(type.value)}
                       >
                         <span className="flex items-center justify-center h-8 w-8 rounded-md bg-primary/10 text-primary">
@@ -662,10 +667,10 @@ const FormBuilder = () => {
 
                 {/* Element properties */}
                 {selectedElement && (
-                  <Card className="border shadow-sm animate-in fade-in duration-300">
+                  <Card className="border border-border/60 shadow-sm animate-in fade-in slide-in-from-bottom-5 duration-300">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-lg font-medium">Properties</CardTitle>
-                      <CardDescription>Edit the selected element</CardDescription>
+                      <CardTitle className="text-base font-medium">Element Properties</CardTitle>
+                      <CardDescription>Customize the selected element</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <ElementPropertyEditor />
@@ -675,18 +680,18 @@ const FormBuilder = () => {
               </div>
             )}
             
-            {/* Form Preview with improved styling */}
+            {/* Form Preview */}
             <div className={`bg-card border rounded-md shadow-sm lg:col-span-${previewMode ? 12 : 6} p-6 relative ${previewMode ? 'animate-in fade-in zoom-in-95' : ''}`}>
               {previewMode && (
-                <div className="absolute top-3 right-3 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium flex items-center">
-                  <Eye className="h-3 w-3 mr-1.5" />
+                <div className="absolute top-3 right-3 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                  <Eye className="h-3 w-3 mr-1" />
                   Preview Mode
                 </div>
               )}
               
               {/* Form Title & Description */}
               {!previewMode ? (
-                <div className="mb-8 space-y-4">
+                <div className="mb-6 space-y-4">
                   <Input
                     value={formData.title}
                     onChange={e => updateFormMetadata('title', e.target.value)}
@@ -711,20 +716,20 @@ const FormBuilder = () => {
 
               {/* Form Elements */}
               {formData.elements.length === 0 ? (
-                <div className="text-center py-16 border-2 border-dashed rounded-md bg-accent/5">
+                <div className="text-center py-12 border-2 border-dashed rounded-md bg-accent/10">
                   <div className="flex flex-col items-center">
-                    <div className="mb-4 p-4 rounded-full bg-primary/10">
-                      <PlusCircle className="h-8 w-8 text-primary" />
+                    <div className="mb-3 p-3 rounded-full bg-primary/10">
+                      <PlusCircle className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="text-xl font-medium mb-2">Add Your First Element</h3>
-                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      Start building your form by adding elements from the sidebar
+                    <h3 className="text-lg font-medium mb-2">Start Building Your Form</h3>
+                    <p className="text-muted-foreground mb-4 max-w-md mx-auto">
+                      Your form is empty. Add elements from the sidebar to get started with creating your custom form.
                     </p>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button size="lg" className="bg-primary hover:bg-primary/90 px-8">
+                        <Button className="bg-primary">
                           <PlusCircle className="mr-2 h-4 w-4" />
-                          Add Element
+                          Add First Element
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
@@ -739,7 +744,7 @@ const FormBuilder = () => {
                             <Button
                               key={type.value}
                               variant="outline"
-                              className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/50 transition-all"
+                              className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/30 transition-all"
                               onClick={() => {
                                 addElement(type.value);
                                 // Close the dialog
@@ -764,10 +769,10 @@ const FormBuilder = () => {
                       key={element.id}
                       className={`p-4 rounded-md transition-all ${
                         selectedElement === element.id && !previewMode 
-                          ? 'ring-2 ring-primary/70 bg-accent/20' 
+                          ? 'ring-2 ring-primary/70 bg-accent/30' 
                           : ''
                       } ${
-                        !previewMode ? 'cursor-pointer hover:bg-accent/10 border border-transparent hover:border-accent' : ''
+                        !previewMode ? 'cursor-pointer hover:bg-accent/20' : ''
                       }`}
                       onClick={() => selectElement(element.id)}
                       draggable={!previewMode}
@@ -776,17 +781,13 @@ const FormBuilder = () => {
                       onDragEnd={handleDragEnd}
                     >
                       {!previewMode && (
-                        <div className="flex justify-between items-center mb-3 py-1.5 px-3 rounded bg-muted/80 text-muted-foreground">
+                        <div className="flex justify-between items-center mb-3 py-1 px-2 rounded bg-muted/60 text-muted-foreground">
                           <div className="flex items-center text-xs">
                             <GripVertical className="h-4 w-4 cursor-grab mr-2 text-muted-foreground/60" />
                             <span className="font-medium">
                               {element.type.charAt(0).toUpperCase() + element.type.slice(1)}
                             </span>
-                            {element.required && (
-                              <div className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-800 rounded-sm text-[10px] font-medium">
-                                Required
-                              </div>
-                            )}
+                            {element.required && <div className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-800 rounded-sm text-[10px] font-medium">Required</div>}
                           </div>
                           <div className="flex gap-1">
                             <TooltipProvider>
@@ -884,7 +885,7 @@ const FormBuilder = () => {
 
                   {/* Submit Button Preview */}
                   {previewMode && (
-                    <Button className="mt-8 px-8 bg-primary hover:bg-primary/90" disabled={!previewMode}>
+                    <Button className="mt-8 px-8" disabled={!previewMode}>
                       Submit Form
                     </Button>
                   )}
@@ -895,34 +896,30 @@ const FormBuilder = () => {
             {/* Form Summary Panel */}
             {!previewMode && (
               <div className="lg:col-span-3">
-                <Card className="border shadow-sm">
+                <Card className="border border-border/60 shadow-sm">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-medium">Form Overview</CardTitle>
-                    <CardDescription>Summary and preview options</CardDescription>
+                    <CardTitle className="text-base font-medium">Form Preview</CardTitle>
+                    <CardDescription>See how your form will appear to users</CardDescription>
                   </CardHeader>
                   <CardContent className="p-0">
                     <div className="bg-accent/10 p-4 flex flex-col items-center">
-                      <Button 
-                        onClick={() => setPreviewMode(true)} 
-                        variant="outline" 
-                        className="mb-2 w-full flex items-center justify-center"
-                      >
+                      <Button onClick={() => setPreviewMode(true)} variant="outline" className="mb-2 w-full">
                         <Eye className="mr-2 h-4 w-4" />
                         Preview Form
                       </Button>
                       <p className="text-xs text-muted-foreground">
-                        See how your form will appear to users
+                        Test how your form appears to users
                       </p>
                     </div>
                     
                     <div className="p-4 border-t">
-                      <h3 className="font-medium mb-3 text-sm">Form Summary</h3>
+                      <h3 className="font-medium mb-2 text-sm">Form Summary</h3>
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
+                        <div className="flex justify-between items-center py-1 px-2 rounded bg-accent/10">
                           <span className="text-muted-foreground">Form Title:</span>
-                          <span className="font-medium truncate max-w-[150px]">{formData.title || "Untitled Form"}</span>
+                          <span className="font-medium truncate max-w-[150px]">{formData.title}</span>
                         </div>
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
+                        <div className="flex justify-between items-center py-1 px-2 rounded bg-accent/10">
                           <span className="text-muted-foreground">Elements:</span>
                           <div className="flex items-center gap-1">
                             <span className="font-medium">{formData.elements.length}</span>
@@ -931,7 +928,7 @@ const FormBuilder = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
+                        <div className="flex justify-between items-center py-1 px-2 rounded bg-accent/10">
                           <span className="text-muted-foreground">Status:</span>
                           <span className="font-medium capitalize inline-flex items-center">
                             <span className={`h-2 w-2 rounded-full mr-1.5 ${
@@ -944,27 +941,23 @@ const FormBuilder = () => {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="bg-muted/30 py-4 flex-col items-stretch gap-2">
-                    <div className="text-center text-sm text-muted-foreground mb-2">
+                  <CardFooter className="bg-muted/30 pb-3 pt-3 flex-col items-stretch gap-2">
+                    <div className="text-center text-sm text-muted-foreground mb-1">
                       Form completion checklist
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm bg-white rounded-md p-2 shadow-sm">
-                        <div className={`flex items-center justify-center h-5 w-5 rounded-full ${formData.title ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                          {formData.title ? <Check className="h-3.5 w-3.5" /> : "1"}
-                        </div>
+                    <div className="space-y-1.5">
+                      <div className="flex items-start gap-2 text-xs">
+                        <Check className={`h-3.5 w-3.5 mt-0.5 ${formData.title ? 'text-green-500' : 'text-muted-foreground'}`} />
                         <div className="flex-1 text-left">
-                          <span className={formData.title ? 'text-green-700 font-medium' : ''}>Form title</span>
+                          <span className={formData.title ? 'text-green-700' : ''}>Form title</span>
                           {!formData.title && <span className="ml-1 text-muted-foreground">(required)</span>}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 text-sm bg-white rounded-md p-2 shadow-sm">
-                        <div className={`flex items-center justify-center h-5 w-5 rounded-full ${formData.elements.length > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                          {formData.elements.length > 0 ? <Check className="h-3.5 w-3.5" /> : "2"}
-                        </div>
+                      <div className="flex items-start gap-2 text-xs">
+                        <Check className={`h-3.5 w-3.5 mt-0.5 ${formData.elements.length > 0 ? 'text-green-500' : 'text-muted-foreground'}`} />
                         <div className="flex-1 text-left">
-                          <span className={formData.elements.length > 0 ? 'text-green-700 font-medium' : ''}>Add elements</span>
-                          {!formData.elements.length && <span className="ml-1 text-muted-foreground">(at least one)</span>}
+                          <span className={formData.elements.length > 0 ? 'text-green-700' : ''}>Form elements</span>
+                          {!formData.elements.length && <span className="ml-1 text-muted-foreground">(at least one required)</span>}
                         </div>
                       </div>
                     </div>
@@ -976,9 +969,9 @@ const FormBuilder = () => {
         </TabsContent>
 
         {/* Settings Tab */}
-        <TabsContent value="settings" className="mt-0">
+        <TabsContent value="settings" className="mt-4">
           <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-            <Card className="border shadow-sm">
+            <Card className="border border-border/60 shadow-sm">
               <CardHeader>
                 <CardTitle>Form Settings</CardTitle>
                 <CardDescription>Configure your form's basic settings</CardDescription>
@@ -1046,7 +1039,7 @@ const FormBuilder = () => {
               </CardContent>
             </Card>
             
-            <Card className="border shadow-sm">
+            <Card className="border border-border/60 shadow-sm">
               <CardHeader>
                 <CardTitle>Submission Settings</CardTitle>
                 <CardDescription>Customize what happens after form submission</CardDescription>
@@ -1115,8 +1108,8 @@ const FormBuilder = () => {
         </TabsContent>
 
         {/* Theme Tab */}
-        <TabsContent value="theme" className="mt-0">
-          <Card className="border shadow-sm">
+        <TabsContent value="theme" className="mt-4">
+          <Card className="border border-border/60 shadow-sm">
             <CardHeader>
               <CardTitle>Form Appearance</CardTitle>
               <CardDescription>Customize the visual style of your form</CardDescription>
