@@ -11,9 +11,21 @@ import {
   Settings as SettingsIcon,
   Eye,
   Copy,
-  X,
   Check,
-  Sparkles
+  Sparkles,
+  FileIcon,
+  AtSign,
+  Hash,
+  AlignLeft,
+  ListFilter,
+  CheckSquare,
+  Circle,
+  Calendar,
+  Clock,
+  Upload,
+  Heading as HeadingIcon,
+  AlignJustify,
+  ChevronsRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +55,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 // Define the types for our form elements
 type FormElementType = 'text' | 'number' | 'email' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'time' | 'file' | 'heading' | 'paragraph';
@@ -80,18 +93,18 @@ const generateId = (): string => {
 
 // Element icon mapping
 const elementIcons: Record<FormElementType, React.ReactNode> = {
-  text: <FileText className="h-5 w-5" />,
-  number: <span className="text-lg font-semibold">123</span>,
-  email: <span className="text-lg">@</span>,
-  textarea: <FileText className="h-5 w-5" />,
-  select: <span className="text-lg">▼</span>,
-  checkbox: <span className="text-lg">☑</span>,
-  radio: <span className="text-lg">○</span>,
-  date: <span className="text-lg">📅</span>,
-  time: <span className="text-lg">⏰</span>,
-  file: <span className="text-lg">📎</span>,
-  heading: <span className="text-lg font-bold">H</span>,
-  paragraph: <span className="text-lg">¶</span>,
+  text: <FileIcon className="h-5 w-5" />,
+  number: <Hash className="h-5 w-5" />,
+  email: <AtSign className="h-5 w-5" />,
+  textarea: <AlignLeft className="h-5 w-5" />,
+  select: <ListFilter className="h-5 w-5" />,
+  checkbox: <CheckSquare className="h-5 w-5" />,
+  radio: <Circle className="h-5 w-5" />,
+  date: <Calendar className="h-5 w-5" />,
+  time: <Clock className="h-5 w-5" />,
+  file: <Upload className="h-5 w-5" />,
+  heading: <HeadingIcon className="h-5 w-5" />,
+  paragraph: <AlignJustify className="h-5 w-5" />,
 };
 
 const FormBuilder = () => {
@@ -260,6 +273,26 @@ const FormBuilder = () => {
     setDraggedIndex(null);
   };
 
+  // Move element up or down
+  const moveElement = (elementId: string, direction: 'up' | 'down') => {
+    const elementIndex = formData.elements.findIndex(el => el.id === elementId);
+    if (
+      (direction === 'up' && elementIndex === 0) || 
+      (direction === 'down' && elementIndex === formData.elements.length - 1)
+    ) {
+      return;
+    }
+
+    const newElements = [...formData.elements];
+    const targetIndex = direction === 'up' ? elementIndex - 1 : elementIndex + 1;
+    
+    // Swap the elements
+    [newElements[elementIndex], newElements[targetIndex]] = 
+    [newElements[targetIndex], newElements[elementIndex]];
+    
+    setFormData(prev => ({ ...prev, elements: newElements }));
+  };
+
   // Save the form
   const saveForm = () => {
     if (!formData.title.trim()) {
@@ -304,6 +337,18 @@ const FormBuilder = () => {
     { value: 'heading', label: 'Heading' },
     { value: 'paragraph', label: 'Paragraph' }
   ];
+
+  // Group element types by category
+  const groupedElementTypes = {
+    basicInputs: elementTypeOptions.filter(type => 
+      ['text', 'number', 'email', 'textarea'].includes(type.value)),
+    selectionInputs: elementTypeOptions.filter(type => 
+      ['select', 'checkbox', 'radio'].includes(type.value)),
+    specializedInputs: elementTypeOptions.filter(type => 
+      ['date', 'time', 'file'].includes(type.value)),
+    layoutElements: elementTypeOptions.filter(type => 
+      ['heading', 'paragraph'].includes(type.value))
+  };
 
   // Render a preview of an element based on its type
   const renderElementPreview = (element: FormElement) => {
@@ -506,41 +551,48 @@ const FormBuilder = () => {
         
         {(['select', 'checkbox', 'radio'].includes(element.type)) && (
           <div className="space-y-2">
-            <Label>Options</Label>
-            {element.options?.map((option, index) => (
-              <div key={index} className="flex gap-2 mb-2">
-                <Input 
-                  value={option}
-                  onChange={e => {
-                    const newOptions = [...(element.options || [])];
-                    newOptions[index] = e.target.value;
-                    updateElement(element.id, { options: newOptions });
-                  }}
-                />
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => {
-                    const newOptions = [...(element.options || [])];
-                    newOptions.splice(index, 1);
-                    updateElement(element.id, { options: newOptions });
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => {
-                const newOptions = [...(element.options || []), `Option ${(element.options?.length || 0) + 1}`];
-                updateElement(element.id, { options: newOptions });
-              }}
-            >
-              <PlusCircle className="mr-2 h-3 w-3" />
-              Add Option
-            </Button>
+            <div className="flex justify-between items-center mb-1">
+              <Label>Options</Label>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  const newOptions = [...(element.options || []), `Option ${(element.options?.length || 0) + 1}`];
+                  updateElement(element.id, { options: newOptions });
+                }}
+                className="h-7 px-2 text-xs"
+              >
+                <PlusCircle className="mr-1 h-3 w-3" />
+                Add Option
+              </Button>
+            </div>
+            <div className="max-h-[200px] overflow-y-auto space-y-2 p-1">
+              {element.options?.map((option, index) => (
+                <div key={index} className="flex gap-2 rounded-md border p-1 bg-background">
+                  <Input 
+                    value={option}
+                    onChange={e => {
+                      const newOptions = [...(element.options || [])];
+                      newOptions[index] = e.target.value;
+                      updateElement(element.id, { options: newOptions });
+                    }}
+                    className="h-8 text-sm"
+                  />
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => {
+                      const newOptions = [...(element.options || [])];
+                      newOptions.splice(index, 1);
+                      updateElement(element.id, { options: newOptions });
+                    }}
+                    className="h-8 w-8"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
         
@@ -573,30 +625,27 @@ const FormBuilder = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with improved design */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 mb-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => navigate("/dashboard/forms")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Create New Form
-            </h1>
-            <p className="text-sm text-muted-foreground">Design your form by adding and configuring elements</p>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {id ? "Edit Form" : "Create New Form"}
+          </h1>
         </div>
-        <div className="flex gap-3 w-full sm:w-auto">
+        <div className="flex gap-2 w-full sm:w-auto">
           <Button 
             variant={previewMode ? "default" : "outline"} 
             className="flex-1 sm:flex-none"
             onClick={() => setPreviewMode(!previewMode)}
           >
             <Eye className="mr-2 h-4 w-4" />
-            Preview
+            {previewMode ? "Exit Preview" : "Preview"}
           </Button>
           <Button 
-            className="flex-1 sm:flex-none bg-primary hover:bg-primary/90"
+            className="flex-1 sm:flex-none"
             onClick={saveForm} 
             disabled={loading}
           >
@@ -615,56 +664,118 @@ const FormBuilder = () => {
         </div>
       </div>
 
-      {/* Tabs with improved styling */}
+      {/* Tabs Navigation */}
       <Tabs defaultValue="builder" className="w-full">
-        <TabsList className="w-full grid grid-cols-3 mb-6 p-1 bg-muted/60">
-          <TabsTrigger value="builder" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <FileText className="mr-2 h-4 w-4" />
+        <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-6">
+          <TabsTrigger value="builder" className="flex items-center gap-1.5 font-medium">
+            <FileText className="h-4 w-4" />
             Form Builder
           </TabsTrigger>
-          <TabsTrigger value="settings" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <SettingsIcon className="mr-2 h-4 w-4" />
+          <TabsTrigger value="settings" className="flex items-center gap-1.5 font-medium">
+            <SettingsIcon className="h-4 w-4" />
             Settings
           </TabsTrigger>
-          <TabsTrigger value="theme" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
-            <Sparkles className="mr-2 h-4 w-4" />
+          <TabsTrigger value="theme" className="flex items-center gap-1.5 font-medium">
+            <Sparkles className="h-4 w-4" />
             Theme
           </TabsTrigger>
         </TabsList>
 
         {/* Builder Tab */}
-        <TabsContent value="builder" className="mt-0">
+        <TabsContent value="builder" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Form Elements Panel */}
             {!previewMode && (
               <div className="lg:col-span-3 space-y-4">
                 <Card className="border shadow-sm">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-medium">Elements</CardTitle>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Elements</CardTitle>
                     <CardDescription>Add elements to your form</CardDescription>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-2 gap-2">
-                    {elementTypeOptions.map(type => (
-                      <Button
-                        key={type.value}
-                        variant="outline"
-                        className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/50 transition-all"
-                        onClick={() => addElement(type.value)}
-                      >
-                        <span className="flex items-center justify-center h-8 w-8 rounded-md bg-primary/10 text-primary">
-                          {elementIcons[type.value]}
-                        </span>
-                        <span className="text-xs">{type.label}</span>
-                      </Button>
-                    ))}
+                  <CardContent>
+                    {/* Basic Inputs */}
+                    <div className="mb-4">
+                      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Basic Inputs</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {groupedElementTypes.basicInputs.map(type => (
+                          <div
+                            key={type.value}
+                            className="flex flex-col items-center justify-center p-2 rounded-md border border-border hover:border-primary/50 hover:bg-accent/30 transition-all cursor-pointer"
+                            onClick={() => addElement(type.value)}
+                          >
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                              {elementIcons[type.value]}
+                            </div>
+                            <span className="text-xs">{type.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Selection Inputs */}
+                    <div className="mb-4">
+                      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Selection Inputs</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {groupedElementTypes.selectionInputs.map(type => (
+                          <div
+                            key={type.value}
+                            className="flex flex-col items-center justify-center p-2 rounded-md border border-border hover:border-primary/50 hover:bg-accent/30 transition-all cursor-pointer"
+                            onClick={() => addElement(type.value)}
+                          >
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                              {elementIcons[type.value]}
+                            </div>
+                            <span className="text-xs">{type.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Specialized Inputs */}
+                    <div className="mb-4">
+                      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Specialized Inputs</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {groupedElementTypes.specializedInputs.map(type => (
+                          <div
+                            key={type.value}
+                            className="flex flex-col items-center justify-center p-2 rounded-md border border-border hover:border-primary/50 hover:bg-accent/30 transition-all cursor-pointer"
+                            onClick={() => addElement(type.value)}
+                          >
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                              {elementIcons[type.value]}
+                            </div>
+                            <span className="text-xs">{type.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Layout Elements */}
+                    <div>
+                      <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Layout Elements</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {groupedElementTypes.layoutElements.map(type => (
+                          <div
+                            key={type.value}
+                            className="flex flex-col items-center justify-center p-2 rounded-md border border-border hover:border-primary/50 hover:bg-accent/30 transition-all cursor-pointer"
+                            onClick={() => addElement(type.value)}
+                          >
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-1">
+                              {elementIcons[type.value]}
+                            </div>
+                            <span className="text-xs">{type.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
-                {/* Element properties */}
+                {/* Element Properties */}
                 {selectedElement && (
-                  <Card className="border shadow-sm animate-in fade-in duration-300">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg font-medium">Properties</CardTitle>
+                  <Card className="border shadow-sm">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">Properties</CardTitle>
                       <CardDescription>Edit the selected element</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -675,229 +786,191 @@ const FormBuilder = () => {
               </div>
             )}
             
-            {/* Form Preview with improved styling */}
-            <div className={`bg-card border rounded-md shadow-sm lg:col-span-${previewMode ? 12 : 6} p-6 relative ${previewMode ? 'animate-in fade-in zoom-in-95' : ''}`}>
+            {/* Form Preview Area */}
+            <div className={`bg-card border rounded-md shadow-sm lg:col-span-${previewMode ? 12 : 6} relative`}>
               {previewMode && (
-                <div className="absolute top-3 right-3 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium flex items-center">
-                  <Eye className="h-3 w-3 mr-1.5" />
+                <div className="absolute top-3 right-3 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">
                   Preview Mode
                 </div>
               )}
               
-              {/* Form Title & Description */}
-              {!previewMode ? (
-                <div className="mb-8 space-y-4">
-                  <Input
-                    value={formData.title}
-                    onChange={e => updateFormMetadata('title', e.target.value)}
-                    className="text-2xl font-bold border-0 border-b rounded-none px-0 focus-visible:ring-0 pb-1"
-                    placeholder="Form Title"
-                  />
-                  <Input
-                    value={formData.description}
-                    onChange={e => updateFormMetadata('description', e.target.value)}
-                    className="border-0 border-b rounded-none px-0 focus-visible:ring-0 text-muted-foreground"
-                    placeholder="Form Description (optional)"
-                  />
-                </div>
-              ) : (
-                <div className="mb-8 space-y-2 border-b pb-4">
-                  <h1 className="text-2xl font-bold">{formData.title}</h1>
-                  {formData.description && (
-                    <p className="text-muted-foreground">{formData.description}</p>
-                  )}
-                </div>
-              )}
+              <div className="p-6">
+                {/* Form Title & Description */}
+                {!previewMode ? (
+                  <div className="mb-6 space-y-4">
+                    <Input
+                      value={formData.title}
+                      onChange={e => updateFormMetadata('title', e.target.value)}
+                      className="text-2xl font-bold border-0 border-b rounded-none px-0 focus-visible:ring-0"
+                      placeholder="Form Title"
+                    />
+                    <Input
+                      value={formData.description}
+                      onChange={e => updateFormMetadata('description', e.target.value)}
+                      className="border-0 border-b rounded-none px-0 focus-visible:ring-0 text-muted-foreground"
+                      placeholder="Form Description (optional)"
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-6 space-y-2">
+                    <h1 className="text-2xl font-bold">{formData.title}</h1>
+                    {formData.description && (
+                      <p className="text-muted-foreground">{formData.description}</p>
+                    )}
+                  </div>
+                )}
 
-              {/* Form Elements */}
-              {formData.elements.length === 0 ? (
-                <div className="text-center py-16 border-2 border-dashed rounded-md bg-accent/5">
-                  <div className="flex flex-col items-center">
-                    <div className="mb-4 p-4 rounded-full bg-primary/10">
-                      <PlusCircle className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-medium mb-2">Add Your First Element</h3>
-                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      Start building your form by adding elements from the sidebar
-                    </p>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button size="lg" className="bg-primary hover:bg-primary/90 px-8">
-                          <PlusCircle className="mr-2 h-4 w-4" />
-                          Add Element
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Choose an element type</DialogTitle>
-                          <DialogDescription>
-                            Select the type of element you want to add to your form.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid grid-cols-3 gap-3 py-4">
-                          {elementTypeOptions.map(type => (
+                {/* Form Elements */}
+                {formData.elements.length === 0 ? (
+                  <div className="text-center py-16 border-2 border-dashed rounded-md bg-accent/5">
+                    <div className="flex flex-col items-center">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <PlusCircle className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-medium mb-2">Add Your First Element</h3>
+                      <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                        Start building your form by adding elements from the sidebar
+                      </p>
+                      <div className="space-y-3">
+                        <div className="font-medium text-sm">Start building your form by adding elements</div>
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {['text', 'email', 'select'].map((type) => (
                             <Button
-                              key={type.value}
+                              key={type}
                               variant="outline"
-                              className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/50 transition-all"
-                              onClick={() => {
-                                addElement(type.value);
-                                // Close the dialog
-                                document.body.click();
-                              }}
+                              className="flex items-center gap-1.5"
+                              onClick={() => addElement(type as FormElementType)}
                             >
-                              <span className="flex items-center justify-center h-8 w-8 rounded-md bg-primary/10 text-primary">
-                                {elementIcons[type.value]}
-                              </span>
-                              <span className="text-xs">{type.label}</span>
+                              {elementIcons[type as FormElementType]}
+                              <span>{elementTypeOptions.find(t => t.value === type)?.label}</span>
                             </Button>
                           ))}
+                          <Button variant="outline" className="flex items-center gap-1.5" onClick={() => setSelectedElement(null)}>
+                            <ChevronsRight className="h-4 w-4" />
+                            <span>More Elements</span>
+                          </Button>
                         </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {formData.elements.map((element, index) => (
-                    <div 
-                      key={element.id}
-                      className={`p-4 rounded-md transition-all ${
-                        selectedElement === element.id && !previewMode 
-                          ? 'ring-2 ring-primary/70 bg-accent/20' 
-                          : ''
-                      } ${
-                        !previewMode ? 'cursor-pointer hover:bg-accent/10 border border-transparent hover:border-accent' : ''
-                      }`}
-                      onClick={() => selectElement(element.id)}
-                      draggable={!previewMode}
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={e => handleDragOver(e, index)}
-                      onDragEnd={handleDragEnd}
-                    >
-                      {!previewMode && (
-                        <div className="flex justify-between items-center mb-3 py-1.5 px-3 rounded bg-muted/80 text-muted-foreground">
-                          <div className="flex items-center text-xs">
-                            <GripVertical className="h-4 w-4 cursor-grab mr-2 text-muted-foreground/60" />
-                            <span className="font-medium">
-                              {element.type.charAt(0).toUpperCase() + element.type.slice(1)}
-                            </span>
-                            {element.required && (
-                              <div className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-800 rounded-sm text-[10px] font-medium">
-                                Required
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex gap-1">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      const elementIndex = formData.elements.findIndex(el => el.id === element.id);
-                                      if (elementIndex > 0) {
-                                        const newElements = [...formData.elements];
-                                        const temp = newElements[elementIndex];
-                                        newElements[elementIndex] = newElements[elementIndex - 1];
-                                        newElements[elementIndex - 1] = temp;
-                                        setFormData(prev => ({ ...prev, elements: newElements }));
-                                      }
-                                    }}
-                                    disabled={index === 0}
-                                  >
-                                    <ArrowLeft className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="bottom">
-                                  <p>Move up</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      deleteElement(element.id);
-                                    }}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="bottom">
-                                  <p>Delete element</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      const newElement = { ...element, id: generateId() };
-                                      setFormData(prev => ({
-                                        ...prev,
-                                        elements: [...prev.elements, newElement]
-                                      }));
-                                    }}
-                                  >
-                                    <Copy className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="bottom">
-                                  <p>Duplicate element</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </div>
-                      )}
-                      {renderElementPreview(element)}
+                      </div>
                     </div>
-                  ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {formData.elements.map((element, index) => (
+                      <div 
+                        key={element.id}
+                        className={cn(
+                          "p-4 rounded-md border transition-all",
+                          selectedElement === element.id && !previewMode 
+                            ? 'ring-2 ring-primary bg-accent/20 border-transparent' 
+                            : 'border-border hover:border-muted-foreground/20',
+                          !previewMode ? 'cursor-pointer' : ''
+                        )}
+                        onClick={() => selectElement(element.id)}
+                        draggable={!previewMode}
+                        onDragStart={() => handleDragStart(index)}
+                        onDragOver={e => handleDragOver(e, index)}
+                        onDragEnd={handleDragEnd}
+                      >
+                        {!previewMode && (
+                          <div className="flex justify-between items-center mb-3 py-1.5 px-2 rounded bg-muted/80 text-muted-foreground">
+                            <div className="flex items-center text-xs gap-1.5">
+                              <GripVertical className="h-3.5 w-3.5 cursor-grab text-muted-foreground/60" />
+                              <div className="flex items-center gap-1">
+                                <div className="w-4 h-4 rounded-full bg-primary/10 flex items-center justify-center">
+                                  {elementIcons[element.type]}
+                                </div>
+                                <span className="font-medium">
+                                  {element.type.charAt(0).toUpperCase() + element.type.slice(1)}
+                                </span>
+                              </div>
+                              {element.required && (
+                                <div className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-800 rounded-sm text-[10px] font-medium">
+                                  Required
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex gap-1">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        const newElement = { ...element, id: generateId() };
+                                        setFormData(prev => ({
+                                          ...prev,
+                                          elements: [...prev.elements, newElement]
+                                        }));
+                                      }}
+                                    >
+                                      <Copy className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="bottom">
+                                    <p>Duplicate element</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        deleteElement(element.id);
+                                      }}
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="bottom">
+                                    <p>Delete element</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
+                          </div>
+                        )}
+                        {renderElementPreview(element)}
+                      </div>
+                    ))}
 
-                  {/* Add Element Button */}
-                  {!previewMode && (
-                    <Button 
-                      variant="outline" 
-                      className="w-full py-6 border-dashed border-primary/30 hover:border-primary/70 hover:bg-primary/5 transition-all"
-                      onClick={() => setSelectedElement(null)}
-                    >
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add Element
-                    </Button>
-                  )}
+                    {/* Add Element Button */}
+                    {!previewMode && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full py-6 border-dashed border-primary/30 hover:border-primary/70 hover:bg-primary/5 transition-all"
+                        onClick={() => setSelectedElement(null)}
+                      >
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add Element
+                      </Button>
+                    )}
 
-                  {/* Submit Button Preview */}
-                  {previewMode && (
-                    <Button className="mt-8 px-8 bg-primary hover:bg-primary/90" disabled={!previewMode}>
-                      Submit Form
-                    </Button>
-                  )}
-                </div>
-              )}
+                    {/* Submit Button Preview */}
+                    {previewMode && (
+                      <Button className="mt-4">
+                        Submit Form
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Form Summary Panel */}
+            {/* Form Overview Panel */}
             {!previewMode && (
               <div className="lg:col-span-3">
                 <Card className="border shadow-sm">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-medium">Form Overview</CardTitle>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Form Overview</CardTitle>
                     <CardDescription>Summary and preview options</CardDescription>
                   </CardHeader>
                   <CardContent className="p-0">
@@ -905,7 +978,7 @@ const FormBuilder = () => {
                       <Button 
                         onClick={() => setPreviewMode(true)} 
                         variant="outline" 
-                        className="mb-2 w-full flex items-center justify-center"
+                        className="mb-2 w-full"
                       >
                         <Eye className="mr-2 h-4 w-4" />
                         Preview Form
@@ -976,7 +1049,7 @@ const FormBuilder = () => {
         </TabsContent>
 
         {/* Settings Tab */}
-        <TabsContent value="settings" className="mt-0">
+        <TabsContent value="settings" className="space-y-6">
           <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
             <Card className="border shadow-sm">
               <CardHeader>
@@ -1105,7 +1178,7 @@ const FormBuilder = () => {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-end pt-2">
-                <Button onClick={() => saveForm()} disabled={loading} size="sm">
+                <Button onClick={() => saveForm()} disabled={loading}>
                   <Save className="mr-2 h-4 w-4" />
                   Save Settings
                 </Button>
@@ -1115,7 +1188,7 @@ const FormBuilder = () => {
         </TabsContent>
 
         {/* Theme Tab */}
-        <TabsContent value="theme" className="mt-0">
+        <TabsContent value="theme" className="space-y-6">
           <Card className="border shadow-sm">
             <CardHeader>
               <CardTitle>Form Appearance</CardTitle>
@@ -1213,7 +1286,7 @@ const FormBuilder = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end pt-2">
-              <Button onClick={() => toast({ title: "Settings saved", description: "Theme settings have been saved successfully." })} size="sm">
+              <Button onClick={() => toast({ title: "Settings saved", description: "Theme settings have been saved successfully." })}>
                 <Save className="mr-2 h-4 w-4" />
                 Save Theme
               </Button>
