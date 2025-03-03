@@ -43,7 +43,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// Define the types for our form elements
 type FormElementType = 'text' | 'number' | 'email' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'time' | 'file' | 'heading' | 'paragraph';
 
 interface FormElement {
@@ -52,7 +51,7 @@ interface FormElement {
   label: string;
   placeholder?: string;
   required: boolean;
-  options?: string[]; // For select, checkbox, radio
+  options?: string[];
   description?: string;
 }
 
@@ -64,7 +63,6 @@ interface FormData {
   status: 'draft' | 'active' | 'archived';
 }
 
-// Default form data
 const defaultFormData: FormData = {
   title: "Untitled Form",
   description: "",
@@ -72,12 +70,10 @@ const defaultFormData: FormData = {
   status: 'draft'
 };
 
-// Helper function to generate unique IDs
 const generateId = (): string => {
   return Math.random().toString(36).substring(2, 11);
 };
 
-// Element icon mapping
 const elementIcons: Record<FormElementType, React.ReactNode> = {
   text: <FileText className="h-5 w-5" />,
   number: <span className="text-lg font-semibold">123</span>,
@@ -105,13 +101,10 @@ const FormBuilder = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   
-  // Fetch form data if editing an existing form
   useEffect(() => {
     if (id) {
       setLoading(true);
-      // This would be an API call in a real app
       setTimeout(() => {
-        // Mock data for demonstration
         const mockForm: FormData = {
           id,
           title: "Sample Feedback Form",
@@ -156,7 +149,6 @@ const FormBuilder = () => {
     }
   }, [id]);
 
-  // Update form metadata
   const updateFormMetadata = (key: keyof FormData, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -164,7 +156,6 @@ const FormBuilder = () => {
     }));
   };
 
-  // Add a new element
   const addElement = (type: FormElementType) => {
     const newElement: FormElement = {
       id: generateId(),
@@ -174,7 +165,6 @@ const FormBuilder = () => {
       required: false
     };
 
-    // Add default options for select, checkbox, radio
     if (type === 'select' || type === 'checkbox' || type === 'radio') {
       newElement.options = ['Option 1', 'Option 2', 'Option 3'];
     }
@@ -192,7 +182,6 @@ const FormBuilder = () => {
     });
   };
 
-  // Update element properties
   const updateElement = (elementId: string, updates: Partial<FormElement>) => {
     setFormData(prev => ({
       ...prev,
@@ -202,7 +191,6 @@ const FormBuilder = () => {
     }));
   };
 
-  // Delete an element
   const deleteElement = (elementId: string) => {
     setFormData(prev => ({
       ...prev,
@@ -219,14 +207,12 @@ const FormBuilder = () => {
     });
   };
 
-  // Handle element selection
   const selectElement = (elementId: string) => {
     if (!previewMode) {
       setSelectedElement(elementId === selectedElement ? null : elementId);
     }
   };
 
-  // Handle element reordering
   const handleDragStart = (index: number) => {
     setIsDragging(true);
     setDraggedIndex(index);
@@ -240,9 +226,7 @@ const FormBuilder = () => {
       const newElements = [...formData.elements];
       const draggedElement = newElements[draggedIndex];
       
-      // Remove the dragged element
       newElements.splice(draggedIndex, 1);
-      // Insert it at the new position
       newElements.splice(index, 0, draggedElement);
       
       setFormData(prev => ({
@@ -259,7 +243,6 @@ const FormBuilder = () => {
     setDraggedIndex(null);
   };
 
-  // Save the form
   const saveForm = () => {
     if (!formData.title.trim()) {
       toast({
@@ -272,7 +255,6 @@ const FormBuilder = () => {
 
     setLoading(true);
 
-    // This would be an API call in a real app
     setTimeout(() => {
       setLoading(false);
       
@@ -283,12 +265,10 @@ const FormBuilder = () => {
           : "Your form has been created successfully."
       });
 
-      // Navigate back to forms list
       navigate("/dashboard/forms");
     }, 1000);
   };
 
-  // Element type option list for adding new elements
   const elementTypeOptions: { value: FormElementType; label: string }[] = [
     { value: 'text', label: 'Text Field' },
     { value: 'number', label: 'Number Field' },
@@ -304,7 +284,6 @@ const FormBuilder = () => {
     { value: 'paragraph', label: 'Paragraph' }
   ];
 
-  // Render a preview of an element based on its type
   const renderElementPreview = (element: FormElement) => {
     const isSelected = selectedElement === element.id;
     
@@ -465,7 +444,6 @@ const FormBuilder = () => {
     }
   };
 
-  // Element property editor
   const ElementPropertyEditor = () => {
     if (!selectedElement) return null;
     
@@ -572,7 +550,6 @@ const FormBuilder = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with improved design */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 mb-6">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => navigate("/dashboard/forms")}>
@@ -614,7 +591,6 @@ const FormBuilder = () => {
         </div>
       </div>
 
-      {/* Tabs with improved styling */}
       <Tabs defaultValue="builder" className="w-full">
         <TabsList className="w-full grid grid-cols-3 mb-6 p-1 bg-muted/60">
           <TabsTrigger value="builder" className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">
@@ -631,10 +607,8 @@ const FormBuilder = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Builder Tab - Improved Design */}
         <TabsContent value="builder" className="mt-0">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Form Elements Panel - Improved Design */}
             {!previewMode && (
               <div className="lg:col-span-3 space-y-6">
                 <Card className="border shadow-sm bg-card">
@@ -664,7 +638,6 @@ const FormBuilder = () => {
                   </CardContent>
                 </Card>
 
-                {/* Element properties - Enhanced Design */}
                 {selectedElement && (
                   <Card className="border shadow-sm animate-in fade-in duration-300 overflow-hidden">
                     <CardHeader className="pb-3 border-b bg-muted/30">
@@ -682,7 +655,6 @@ const FormBuilder = () => {
               </div>
             )}
             
-            {/* Form Preview with improved styling */}
             <div className={`bg-card border rounded-lg shadow-sm lg:col-span-${previewMode ? 12 : 6} p-0 relative ${previewMode ? 'animate-in fade-in zoom-in-95' : ''}`}>
               {previewMode && (
                 <div className="absolute top-3 right-3 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium flex items-center">
@@ -691,7 +663,6 @@ const FormBuilder = () => {
                 </div>
               )}
               
-              {/* Form Header Bar */}
               <div className="p-4 border-b bg-muted/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -713,7 +684,6 @@ const FormBuilder = () => {
               </div>
               
               <div className="p-6">
-                {/* Form Title & Description */}
                 {!previewMode ? (
                   <div className="mb-8 space-y-4">
                     <Input
@@ -738,7 +708,6 @@ const FormBuilder = () => {
                   </div>
                 )}
 
-                {/* Form Elements */}
                 {formData.elements.length === 0 ? (
                   <div className="text-center py-16 border-2 border-dashed rounded-lg bg-accent/5">
                     <div className="flex flex-col items-center">
@@ -771,7 +740,6 @@ const FormBuilder = () => {
                                 className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/50 transition-all"
                                 onClick={() => {
                                   addElement(type.value);
-                                  // Close the dialog
                                   document.body.click();
                                 }}
                               >
@@ -899,10 +867,136 @@ const FormBuilder = () => {
                       </div>
                     ))}
 
-                    {/* Add Element Button */}
                     {!previewMode && (
                       <Button 
                         variant="outline" 
                         className="w-full py-6 border-dashed border-primary/30 hover:border-primary/70 hover:bg-primary/5 transition-all"
                         onClick={() => setSelectedElement(null)}
                       >
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add Element
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle>Form Settings</CardTitle>
+                <CardDescription>Configure your form settings</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="form-status">Form Status</Label>
+                  <Select 
+                    value={formData.status} 
+                    onValueChange={(value) => updateFormMetadata('status', value)}
+                  >
+                    <SelectTrigger id="form-status">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="archived">Archived</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">
+                    Only active forms can receive submissions
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="form-submit-text">Submit Button Text</Label>
+                  <Input 
+                    id="form-submit-text"
+                    placeholder="Submit Form"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="form-success-message">Success Message</Label>
+                  <Input 
+                    id="form-success-message"
+                    placeholder="Thank you for your submission!"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    This message will be shown after successful form submission
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="theme">
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle>Form Theme</CardTitle>
+                <CardDescription>Customize the appearance of your form</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="theme-primary-color">Primary Color</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      id="theme-primary-color"
+                      type="color"
+                      className="w-12 h-10 p-1"
+                      value="#0284c7"
+                    />
+                    <Input 
+                      value="#0284c7"
+                      readOnly
+                      className="font-mono"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="theme-font">Font Family</Label>
+                  <Select defaultValue="inter">
+                    <SelectTrigger id="theme-font">
+                      <SelectValue placeholder="Select font" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="inter">Inter</SelectItem>
+                      <SelectItem value="roboto">Roboto</SelectItem>
+                      <SelectItem value="lato">Lato</SelectItem>
+                      <SelectItem value="opensans">Open Sans</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="theme-border-radius">Border Radius</Label>
+                  <Select defaultValue="rounded">
+                    <SelectTrigger id="theme-border-radius">
+                      <SelectValue placeholder="Select border style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="rounded-sm">Small</SelectItem>
+                      <SelectItem value="rounded">Medium</SelectItem>
+                      <SelectItem value="rounded-lg">Large</SelectItem>
+                      <SelectItem value="rounded-xl">Extra Large</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default FormBuilder;
