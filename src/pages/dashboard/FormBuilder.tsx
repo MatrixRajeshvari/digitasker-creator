@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
@@ -632,42 +631,50 @@ const FormBuilder = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Builder Tab */}
+        {/* Builder Tab - Improved Design */}
         <TabsContent value="builder" className="mt-0">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Form Elements Panel */}
+            {/* Form Elements Panel - Improved Design */}
             {!previewMode && (
-              <div className="lg:col-span-3 space-y-4">
-                <Card className="border shadow-sm">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-medium">Elements</CardTitle>
-                    <CardDescription>Add elements to your form</CardDescription>
+              <div className="lg:col-span-3 space-y-6">
+                <Card className="border shadow-sm bg-card">
+                  <CardHeader className="pb-3 border-b">
+                    <CardTitle className="text-xl font-semibold flex items-center">
+                      <PlusCircle className="h-5 w-5 mr-2 text-primary" />
+                      Elements
+                    </CardTitle>
+                    <CardDescription>Drag and drop to your form</CardDescription>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-2 gap-2">
-                    {elementTypeOptions.map(type => (
-                      <Button
-                        key={type.value}
-                        variant="outline"
-                        className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/50 transition-all"
-                        onClick={() => addElement(type.value)}
-                      >
-                        <span className="flex items-center justify-center h-8 w-8 rounded-md bg-primary/10 text-primary">
-                          {elementIcons[type.value]}
-                        </span>
-                        <span className="text-xs">{type.label}</span>
-                      </Button>
-                    ))}
+                  <CardContent className="p-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      {elementTypeOptions.map(type => (
+                        <Button
+                          key={type.value}
+                          variant="outline"
+                          className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-primary/5 hover:border-primary/50 transition-all"
+                          onClick={() => addElement(type.value)}
+                        >
+                          <span className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10 text-primary">
+                            {elementIcons[type.value]}
+                          </span>
+                          <span className="text-xs font-medium">{type.label}</span>
+                        </Button>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
 
-                {/* Element properties */}
+                {/* Element properties - Enhanced Design */}
                 {selectedElement && (
-                  <Card className="border shadow-sm animate-in fade-in duration-300">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg font-medium">Properties</CardTitle>
-                      <CardDescription>Edit the selected element</CardDescription>
+                  <Card className="border shadow-sm animate-in fade-in duration-300 overflow-hidden">
+                    <CardHeader className="pb-3 border-b bg-muted/30">
+                      <CardTitle className="text-lg font-semibold flex items-center">
+                        <SettingsIcon className="h-4 w-4 mr-2 text-primary" />
+                        Properties
+                      </CardTitle>
+                      <CardDescription>Customize the selected element</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4 space-y-5">
                       <ElementPropertyEditor />
                     </CardContent>
                   </Card>
@@ -676,7 +683,7 @@ const FormBuilder = () => {
             )}
             
             {/* Form Preview with improved styling */}
-            <div className={`bg-card border rounded-md shadow-sm lg:col-span-${previewMode ? 12 : 6} p-6 relative ${previewMode ? 'animate-in fade-in zoom-in-95' : ''}`}>
+            <div className={`bg-card border rounded-lg shadow-sm lg:col-span-${previewMode ? 12 : 6} p-0 relative ${previewMode ? 'animate-in fade-in zoom-in-95' : ''}`}>
               {previewMode && (
                 <div className="absolute top-3 right-3 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium flex items-center">
                   <Eye className="h-3 w-3 mr-1.5" />
@@ -684,545 +691,218 @@ const FormBuilder = () => {
                 </div>
               )}
               
-              {/* Form Title & Description */}
-              {!previewMode ? (
-                <div className="mb-8 space-y-4">
-                  <Input
-                    value={formData.title}
-                    onChange={e => updateFormMetadata('title', e.target.value)}
-                    className="text-2xl font-bold border-0 border-b rounded-none px-0 focus-visible:ring-0 pb-1"
-                    placeholder="Form Title"
-                  />
-                  <Input
-                    value={formData.description}
-                    onChange={e => updateFormMetadata('description', e.target.value)}
-                    className="border-0 border-b rounded-none px-0 focus-visible:ring-0 text-muted-foreground"
-                    placeholder="Form Description (optional)"
-                  />
-                </div>
-              ) : (
-                <div className="mb-8 space-y-2 border-b pb-4">
-                  <h1 className="text-2xl font-bold">{formData.title}</h1>
-                  {formData.description && (
-                    <p className="text-muted-foreground">{formData.description}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Form Elements */}
-              {formData.elements.length === 0 ? (
-                <div className="text-center py-16 border-2 border-dashed rounded-md bg-accent/5">
-                  <div className="flex flex-col items-center">
-                    <div className="mb-4 p-4 rounded-full bg-primary/10">
-                      <PlusCircle className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-medium mb-2">Add Your First Element</h3>
-                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      Start building your form by adding elements from the sidebar
-                    </p>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button size="lg" className="bg-primary hover:bg-primary/90 px-8">
-                          <PlusCircle className="mr-2 h-4 w-4" />
-                          Add Element
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Choose an element type</DialogTitle>
-                          <DialogDescription>
-                            Select the type of element you want to add to your form.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid grid-cols-3 gap-3 py-4">
-                          {elementTypeOptions.map(type => (
-                            <Button
-                              key={type.value}
-                              variant="outline"
-                              className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/50 transition-all"
-                              onClick={() => {
-                                addElement(type.value);
-                                // Close the dialog
-                                document.body.click();
-                              }}
-                            >
-                              <span className="flex items-center justify-center h-8 w-8 rounded-md bg-primary/10 text-primary">
-                                {elementIcons[type.value]}
-                              </span>
-                              <span className="text-xs">{type.label}</span>
-                            </Button>
-                          ))}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+              {/* Form Header Bar */}
+              <div className="p-4 border-b bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold">Form Preview</h3>
                   </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {formData.elements.map((element, index) => (
-                    <div 
-                      key={element.id}
-                      className={`p-4 rounded-md transition-all ${
-                        selectedElement === element.id && !previewMode 
-                          ? 'ring-2 ring-primary/70 bg-accent/20' 
-                          : ''
-                      } ${
-                        !previewMode ? 'cursor-pointer hover:bg-accent/10 border border-transparent hover:border-accent' : ''
-                      }`}
-                      onClick={() => selectElement(element.id)}
-                      draggable={!previewMode}
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={e => handleDragOver(e, index)}
-                      onDragEnd={handleDragEnd}
-                    >
-                      {!previewMode && (
-                        <div className="flex justify-between items-center mb-3 py-1.5 px-3 rounded bg-muted/80 text-muted-foreground">
-                          <div className="flex items-center text-xs">
-                            <GripVertical className="h-4 w-4 cursor-grab mr-2 text-muted-foreground/60" />
-                            <span className="font-medium">
-                              {element.type.charAt(0).toUpperCase() + element.type.slice(1)}
-                            </span>
-                            {element.required && (
-                              <div className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-800 rounded-sm text-[10px] font-medium">
-                                Required
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex gap-1">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      const elementIndex = formData.elements.findIndex(el => el.id === element.id);
-                                      if (elementIndex > 0) {
-                                        const newElements = [...formData.elements];
-                                        const temp = newElements[elementIndex];
-                                        newElements[elementIndex] = newElements[elementIndex - 1];
-                                        newElements[elementIndex - 1] = temp;
-                                        setFormData(prev => ({ ...prev, elements: newElements }));
-                                      }
-                                    }}
-                                    disabled={index === 0}
-                                  >
-                                    <ArrowLeft className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="bottom">
-                                  <p>Move up</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      deleteElement(element.id);
-                                    }}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="bottom">
-                                  <p>Delete element</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={e => {
-                                      e.stopPropagation();
-                                      const newElement = { ...element, id: generateId() };
-                                      setFormData(prev => ({
-                                        ...prev,
-                                        elements: [...prev.elements, newElement]
-                                      }));
-                                    }}
-                                  >
-                                    <Copy className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="bottom">
-                                  <p>Duplicate element</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </div>
-                      )}
-                      {renderElementPreview(element)}
-                    </div>
-                  ))}
-
-                  {/* Add Element Button */}
                   {!previewMode && (
                     <Button 
-                      variant="outline" 
-                      className="w-full py-6 border-dashed border-primary/30 hover:border-primary/70 hover:bg-primary/5 transition-all"
-                      onClick={() => setSelectedElement(null)}
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => setPreviewMode(true)}
                     >
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add Element
+                      <Eye className="h-3 w-3 mr-1.5" />
+                      Full Preview
                     </Button>
                   )}
-
-                  {/* Submit Button Preview */}
-                  {previewMode && (
-                    <Button className="mt-8 px-8 bg-primary hover:bg-primary/90" disabled={!previewMode}>
-                      Submit Form
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Form Summary Panel */}
-            {!previewMode && (
-              <div className="lg:col-span-3">
-                <Card className="border shadow-sm">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-medium">Form Overview</CardTitle>
-                    <CardDescription>Summary and preview options</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="bg-accent/10 p-4 flex flex-col items-center">
-                      <Button 
-                        onClick={() => setPreviewMode(true)} 
-                        variant="outline" 
-                        className="mb-2 w-full flex items-center justify-center"
-                      >
-                        <Eye className="mr-2 h-4 w-4" />
-                        Preview Form
-                      </Button>
-                      <p className="text-xs text-muted-foreground">
-                        See how your form will appear to users
-                      </p>
-                    </div>
-                    
-                    <div className="p-4 border-t">
-                      <h3 className="font-medium mb-3 text-sm">Form Summary</h3>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
-                          <span className="text-muted-foreground">Form Title:</span>
-                          <span className="font-medium truncate max-w-[150px]">{formData.title || "Untitled Form"}</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
-                          <span className="text-muted-foreground">Elements:</span>
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium">{formData.elements.length}</span>
-                            <span className="text-xs text-muted-foreground">
-                              ({formData.elements.filter(el => el.required).length} required)
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
-                          <span className="text-muted-foreground">Status:</span>
-                          <span className="font-medium capitalize inline-flex items-center">
-                            <span className={`h-2 w-2 rounded-full mr-1.5 ${
-                              formData.status === 'active' ? 'bg-green-500' : 
-                              formData.status === 'draft' ? 'bg-yellow-500' : 'bg-gray-500'
-                            }`}></span>
-                            {formData.status}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="bg-muted/30 py-4 flex-col items-stretch gap-2">
-                    <div className="text-center text-sm text-muted-foreground mb-2">
-                      Form completion checklist
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm bg-white rounded-md p-2 shadow-sm">
-                        <div className={`flex items-center justify-center h-5 w-5 rounded-full ${formData.title ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                          {formData.title ? <Check className="h-3.5 w-3.5" /> : "1"}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <span className={formData.title ? 'text-green-700 font-medium' : ''}>Form title</span>
-                          {!formData.title && <span className="ml-1 text-muted-foreground">(required)</span>}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm bg-white rounded-md p-2 shadow-sm">
-                        <div className={`flex items-center justify-center h-5 w-5 rounded-full ${formData.elements.length > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                          {formData.elements.length > 0 ? <Check className="h-3.5 w-3.5" /> : "2"}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <span className={formData.elements.length > 0 ? 'text-green-700 font-medium' : ''}>Add elements</span>
-                          {!formData.elements.length && <span className="ml-1 text-muted-foreground">(at least one)</span>}
-                        </div>
-                      </div>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        {/* Settings Tab */}
-        <TabsContent value="settings" className="mt-0">
-          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-            <Card className="border shadow-sm">
-              <CardHeader>
-                <CardTitle>Form Settings</CardTitle>
-                <CardDescription>Configure your form's basic settings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="form-status">Form Status</Label>
-                  <Select 
-                    value={formData.status} 
-                    onValueChange={(value: 'draft' | 'active' | 'archived') => updateFormMetadata('status', value)}
-                  >
-                    <SelectTrigger id="form-status">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">
-                        <div className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-yellow-500 mr-2"></div>
-                          Draft
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="active">
-                        <div className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
-                          Active
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="archived">
-                        <div className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-gray-500 mr-2"></div>
-                          Archived
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Only active forms can receive submissions
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="form-title">Form Title</Label>
-                  <Input 
-                    id="form-title"
-                    value={formData.title}
-                    onChange={e => updateFormMetadata('title', e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    A clear title helps users understand the purpose of your form
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="form-description">Form Description</Label>
-                  <textarea 
-                    id="form-description"
-                    value={formData.description}
-                    onChange={e => updateFormMetadata('description', e.target.value)}
-                    className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Provide additional context or instructions for form respondents
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="border shadow-sm">
-              <CardHeader>
-                <CardTitle>Submission Settings</CardTitle>
-                <CardDescription>Customize what happens after form submission</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="success-message">Success Message</Label>
-                  <textarea 
-                    id="success-message"
-                    className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Thank you for your submission!"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Message shown to users after successfully submitting the form
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="redirect-url">Redirect URL (Optional)</Label>
-                  <Input 
-                    id="redirect-url"
-                    type="url"
-                    placeholder="https://example.com/thank-you"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Redirect users to a specific page after form submission
-                  </p>
-                </div>
-                
-                <div className="flex items-center gap-3 p-3 bg-accent/20 rounded-md">
-                  <input 
-                    type="checkbox"
-                    id="email-notifications"
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                  <div>
-                    <Label htmlFor="email-notifications" className="font-medium">Enable email notifications</Label>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Get notified via email when someone submits this form
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3 p-3 bg-accent/20 rounded-md">
-                  <input 
-                    type="checkbox"
-                    id="limit-submissions"
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                  <div>
-                    <Label htmlFor="limit-submissions" className="font-medium">Limit submissions</Label>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Set a maximum number of form submissions
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end pt-2">
-                <Button onClick={() => saveForm()} disabled={loading} size="sm">
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Settings
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Theme Tab */}
-        <TabsContent value="theme" className="mt-0">
-          <Card className="border shadow-sm">
-            <CardHeader>
-              <CardTitle>Form Appearance</CardTitle>
-              <CardDescription>Customize the visual style of your form</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-                <div className="space-y-3">
-                  <Label>Theme</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="relative">
-                      <Button variant="outline" className="h-20 w-full bg-background flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                        <span className="text-xs font-normal">Light</span>
-                        <div className="h-2 w-2 rounded-full bg-green-500 absolute top-2 right-2"></div>
-                      </Button>
-                    </div>
-                    <Button variant="outline" className="h-20 w-full bg-slate-900 text-white flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-xs font-normal">Dark</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-xs font-normal">Custom</span>
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Select the color theme for your form
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <Label>Font Style</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <Button variant="outline" className="h-20 w-full font-sans flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-lg">Aa</span>
-                      <span className="text-xs font-normal">Sans</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 w-full font-serif flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-lg">Aa</span>
-                      <span className="text-xs font-normal">Serif</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 w-full font-mono flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-lg">Aa</span>
-                      <span className="text-xs font-normal">Mono</span>
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Choose a font style that matches your brand
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <Label>Primary Color</Label>
-                  <div className="grid grid-cols-6 gap-2">
-                    <div className="h-10 w-full bg-blue-500 rounded-md cursor-pointer ring-2 ring-offset-2 ring-blue-500"></div>
-                    <div className="h-10 w-full bg-purple-500 rounded-md cursor-pointer"></div>
-                    <div className="h-10 w-full bg-pink-500 rounded-md cursor-pointer"></div>
-                    <div className="h-10 w-full bg-orange-500 rounded-md cursor-pointer"></div>
-                    <div className="h-10 w-full bg-green-500 rounded-md cursor-pointer"></div>
-                    <div className="h-10 w-full bg-slate-700 rounded-md cursor-pointer"></div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    This affects buttons, active elements and accents
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <Label>Border Style</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <Button variant="outline" className="h-16 w-full flex flex-col items-center justify-center gap-1 hover:border-primary/50">
-                      <div className="h-6 w-10 border rounded-md"></div>
-                      <span className="text-xs font-normal">Square</span>
-                    </Button>
-                    <Button variant="outline" className="h-16 w-full flex flex-col items-center justify-center gap-1 hover:border-primary/50">
-                      <div className="h-6 w-10 border rounded-lg"></div>
-                      <span className="text-xs font-normal">Rounded</span>
-                    </Button>
-                    <Button variant="outline" className="h-16 w-full flex flex-col items-center justify-center gap-1 hover:border-primary/50">
-                      <div className="h-6 w-10 border rounded-xl"></div>
-                      <span className="text-xs font-normal">Pill</span>
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Choose the border style for form elements
-                  </p>
                 </div>
               </div>
               
-              <div className="mt-8 bg-accent/10 p-4 rounded-md flex items-center gap-3">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <div>
-                  <h3 className="text-sm font-medium">Coming Soon</h3>
-                  <p className="text-xs text-muted-foreground">
-                    More advanced appearance settings will be available in a future update.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end pt-2">
-              <Button onClick={() => toast({ title: "Settings saved", description: "Theme settings have been saved successfully." })} size="sm">
-                <Save className="mr-2 h-4 w-4" />
-                Save Theme
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-};
+              <div className="p-6">
+                {/* Form Title & Description */}
+                {!previewMode ? (
+                  <div className="mb-8 space-y-4">
+                    <Input
+                      value={formData.title}
+                      onChange={e => updateFormMetadata('title', e.target.value)}
+                      className="text-2xl font-bold border-0 border-b rounded-none px-0 focus-visible:ring-0 pb-1"
+                      placeholder="Form Title"
+                    />
+                    <Input
+                      value={formData.description}
+                      onChange={e => updateFormMetadata('description', e.target.value)}
+                      className="border-0 border-b rounded-none px-0 focus-visible:ring-0 text-muted-foreground"
+                      placeholder="Form Description (optional)"
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-8 space-y-2 border-b pb-4">
+                    <h1 className="text-2xl font-bold">{formData.title}</h1>
+                    {formData.description && (
+                      <p className="text-muted-foreground">{formData.description}</p>
+                    )}
+                  </div>
+                )}
 
-export default FormBuilder;
+                {/* Form Elements */}
+                {formData.elements.length === 0 ? (
+                  <div className="text-center py-16 border-2 border-dashed rounded-lg bg-accent/5">
+                    <div className="flex flex-col items-center">
+                      <div className="mb-4 p-4 rounded-full bg-primary/10">
+                        <PlusCircle className="h-8 w-8 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-medium mb-2">Add Your First Element</h3>
+                      <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                        Start building your form by adding elements from the sidebar
+                      </p>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="lg" className="bg-primary hover:bg-primary/90 px-8">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Add Element
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Choose an element type</DialogTitle>
+                            <DialogDescription>
+                              Select the type of element you want to add to your form.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid grid-cols-3 gap-3 py-4">
+                            {elementTypeOptions.map(type => (
+                              <Button
+                                key={type.value}
+                                variant="outline"
+                                className="flex flex-col h-auto py-4 justify-center items-center gap-2 hover:bg-accent/50 hover:border-primary/50 transition-all"
+                                onClick={() => {
+                                  addElement(type.value);
+                                  // Close the dialog
+                                  document.body.click();
+                                }}
+                              >
+                                <span className="flex items-center justify-center h-8 w-8 rounded-md bg-primary/10 text-primary">
+                                  {elementIcons[type.value]}
+                                </span>
+                                <span className="text-xs">{type.label}</span>
+                              </Button>
+                            ))}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {formData.elements.map((element, index) => (
+                      <div 
+                        key={element.id}
+                        className={`p-4 rounded-md transition-all ${
+                          selectedElement === element.id && !previewMode 
+                            ? 'ring-2 ring-primary/70 bg-primary/5' 
+                            : ''
+                        } ${
+                          !previewMode ? 'cursor-pointer hover:bg-muted/50 border border-transparent hover:border-primary/20' : ''
+                        }`}
+                        onClick={() => selectElement(element.id)}
+                        draggable={!previewMode}
+                        onDragStart={() => handleDragStart(index)}
+                        onDragOver={e => handleDragOver(e, index)}
+                        onDragEnd={handleDragEnd}
+                      >
+                        {!previewMode && (
+                          <div className="flex justify-between items-center mb-3 py-1.5 px-3 rounded-md bg-muted/70 text-muted-foreground">
+                            <div className="flex items-center text-xs">
+                              <GripVertical className="h-4 w-4 cursor-grab mr-2 text-muted-foreground/60" />
+                              <span className="font-medium">
+                                {element.type.charAt(0).toUpperCase() + element.type.slice(1)}
+                              </span>
+                              {element.required && (
+                                <div className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-800 rounded-sm text-[10px] font-medium">
+                                  Required
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex gap-1">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        const elementIndex = formData.elements.findIndex(el => el.id === element.id);
+                                        if (elementIndex > 0) {
+                                          const newElements = [...formData.elements];
+                                          const temp = newElements[elementIndex];
+                                          newElements[elementIndex] = newElements[elementIndex - 1];
+                                          newElements[elementIndex - 1] = temp;
+                                          setFormData(prev => ({ ...prev, elements: newElements }));
+                                        }
+                                      }}
+                                      disabled={index === 0}
+                                    >
+                                      <ArrowLeft className="h-3 w-3" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="bottom">
+                                    <p>Move up</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        deleteElement(element.id);
+                                      }}
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="bottom">
+                                    <p>Delete element</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        const newElement = { ...element, id: generateId() };
+                                        setFormData(prev => ({
+                                          ...prev,
+                                          elements: [...prev.elements, newElement]
+                                        }));
+                                      }}
+                                    >
+                                      <Copy className="h-3 w-3" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="bottom">
+                                    <p>Duplicate element</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
+                          </div>
+                        )}
+                        {renderElementPreview(element)}
+                      </div>
+                    ))}
+
+                    {/* Add Element Button */}
+                    {!previewMode && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full py-6 border-dashed border-primary/30 hover:border-primary/70 hover:bg-primary/5 transition-all"
+                        onClick={() => setSelectedElement(null)}
+                      >
