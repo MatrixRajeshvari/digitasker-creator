@@ -1,4 +1,4 @@
-
+<lov-code>
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
@@ -13,7 +13,15 @@ import {
   Copy,
   X,
   Check,
-  Sparkles
+  Sparkles,
+  Palette,
+  SunMoon,
+  Type,
+  BoxSelect,
+  Layers,
+  CircleDot,
+  Sliders,
+  Layout
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +51,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 
 // Define the types for our form elements
 type FormElementType = 'text' | 'number' | 'email' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'time' | 'file' | 'heading' | 'paragraph';
@@ -106,6 +122,27 @@ const FormBuilder = () => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   
+  // Add new state for advanced appearance settings
+  const [advancedAppearanceSettings, setAdvancedAppearanceSettings] = useState({
+    formBackgroundColor: "#ffffff",
+    formTextColor: "#000000",
+    inputBackgroundColor: "#ffffff",
+    inputBorderColor: "#e2e8f0",
+    inputTextColor: "#000000",
+    buttonStyle: "filled",
+    buttonRoundness: 4, // 0-10 scale for border-radius
+    spacing: "comfortable", // comfortable, compact, spacious
+    labelPosition: "top", // top, left, hidden
+    formAlignment: "left", // left, center, right
+    animationLevel: "subtle", // none, subtle, medium, high
+    fieldTransparency: 0, // 0-100
+    showSeparators: true,
+    buttonGradient: false,
+    formShadowIntensity: 2, // 0-10 scale
+    customFont: "default", // default, serif, monospace, etc.
+    formIconStyle: "outlined", // outlined, filled, rounded, etc.
+  });
+
   // Fetch form data if editing an existing form
   useEffect(() => {
     if (id) {
@@ -571,6 +608,14 @@ const FormBuilder = () => {
     );
   };
 
+  // Update advanced appearance settings handler
+  const handleAdvancedAppearanceChange = (key: any, value: any) => {
+    setAdvancedAppearanceSettings({
+      ...advancedAppearanceSettings,
+      [key]: value
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header with improved design */}
@@ -870,359 +915,3 @@ const FormBuilder = () => {
                     </div>
                   ))}
 
-                  {/* Add Element Button */}
-                  {!previewMode && (
-                    <Button 
-                      variant="outline" 
-                      className="w-full py-6 border-dashed border-primary/30 hover:border-primary/70 hover:bg-primary/5 transition-all"
-                      onClick={() => setSelectedElement(null)}
-                    >
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add Element
-                    </Button>
-                  )}
-
-                  {/* Submit Button Preview */}
-                  {previewMode && (
-                    <Button className="mt-8 px-8 bg-primary hover:bg-primary/90" disabled={!previewMode}>
-                      Submit Form
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Form Summary Panel */}
-            {!previewMode && (
-              <div className="lg:col-span-3">
-                <Card className="border shadow-sm">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-medium">Form Overview</CardTitle>
-                    <CardDescription>Summary and preview options</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="bg-accent/10 p-4 flex flex-col items-center">
-                      <Button 
-                        onClick={() => setPreviewMode(true)} 
-                        variant="outline" 
-                        className="mb-2 w-full flex items-center justify-center"
-                      >
-                        <Eye className="mr-2 h-4 w-4" />
-                        Preview Form
-                      </Button>
-                      <p className="text-xs text-muted-foreground">
-                        See how your form will appear to users
-                      </p>
-                    </div>
-                    
-                    <div className="p-4 border-t">
-                      <h3 className="font-medium mb-3 text-sm">Form Summary</h3>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
-                          <span className="text-muted-foreground">Form Title:</span>
-                          <span className="font-medium truncate max-w-[150px]">{formData.title || "Untitled Form"}</span>
-                        </div>
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
-                          <span className="text-muted-foreground">Elements:</span>
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium">{formData.elements.length}</span>
-                            <span className="text-xs text-muted-foreground">
-                              ({formData.elements.filter(el => el.required).length} required)
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center py-2 px-3 rounded-md bg-accent/10">
-                          <span className="text-muted-foreground">Status:</span>
-                          <span className="font-medium capitalize inline-flex items-center">
-                            <span className={`h-2 w-2 rounded-full mr-1.5 ${
-                              formData.status === 'active' ? 'bg-green-500' : 
-                              formData.status === 'draft' ? 'bg-yellow-500' : 'bg-gray-500'
-                            }`}></span>
-                            {formData.status}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="bg-muted/30 py-4 flex-col items-stretch gap-2">
-                    <div className="text-center text-sm text-muted-foreground mb-2">
-                      Form completion checklist
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm bg-white rounded-md p-2 shadow-sm">
-                        <div className={`flex items-center justify-center h-5 w-5 rounded-full ${formData.title ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                          {formData.title ? <Check className="h-3.5 w-3.5" /> : "1"}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <span className={formData.title ? 'text-green-700 font-medium' : ''}>Form title</span>
-                          {!formData.title && <span className="ml-1 text-muted-foreground">(required)</span>}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm bg-white rounded-md p-2 shadow-sm">
-                        <div className={`flex items-center justify-center h-5 w-5 rounded-full ${formData.elements.length > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                          {formData.elements.length > 0 ? <Check className="h-3.5 w-3.5" /> : "2"}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <span className={formData.elements.length > 0 ? 'text-green-700 font-medium' : ''}>Add elements</span>
-                          {!formData.elements.length && <span className="ml-1 text-muted-foreground">(at least one)</span>}
-                        </div>
-                      </div>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        {/* Settings Tab */}
-        <TabsContent value="settings" className="mt-0">
-          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-            <Card className="border shadow-sm">
-              <CardHeader>
-                <CardTitle>Form Settings</CardTitle>
-                <CardDescription>Configure your form's basic settings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="form-status">Form Status</Label>
-                  <Select 
-                    value={formData.status} 
-                    onValueChange={(value: 'draft' | 'active' | 'archived') => updateFormMetadata('status', value)}
-                  >
-                    <SelectTrigger id="form-status">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">
-                        <div className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-yellow-500 mr-2"></div>
-                          Draft
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="active">
-                        <div className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
-                          Active
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="archived">
-                        <div className="flex items-center">
-                          <div className="h-2 w-2 rounded-full bg-gray-500 mr-2"></div>
-                          Archived
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Only active forms can receive submissions
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="form-title">Form Title</Label>
-                  <Input 
-                    id="form-title"
-                    value={formData.title}
-                    onChange={e => updateFormMetadata('title', e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    A clear title helps users understand the purpose of your form
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="form-description">Form Description</Label>
-                  <textarea 
-                    id="form-description"
-                    value={formData.description}
-                    onChange={e => updateFormMetadata('description', e.target.value)}
-                    className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Provide additional context or instructions for form respondents
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="border shadow-sm">
-              <CardHeader>
-                <CardTitle>Submission Settings</CardTitle>
-                <CardDescription>Customize what happens after form submission</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="success-message">Success Message</Label>
-                  <textarea 
-                    id="success-message"
-                    className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Thank you for your submission!"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Message shown to users after successfully submitting the form
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="redirect-url">Redirect URL (Optional)</Label>
-                  <Input 
-                    id="redirect-url"
-                    type="url"
-                    placeholder="https://example.com/thank-you"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Redirect users to a specific page after form submission
-                  </p>
-                </div>
-                
-                <div className="flex items-center gap-3 p-3 bg-accent/20 rounded-md">
-                  <input 
-                    type="checkbox"
-                    id="email-notifications"
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                  <div>
-                    <Label htmlFor="email-notifications" className="font-medium">Enable email notifications</Label>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Get notified via email when someone submits this form
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3 p-3 bg-accent/20 rounded-md">
-                  <input 
-                    type="checkbox"
-                    id="limit-submissions"
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                  <div>
-                    <Label htmlFor="limit-submissions" className="font-medium">Limit submissions</Label>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Set a maximum number of form submissions
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end pt-2">
-                <Button onClick={() => saveForm()} disabled={loading} size="sm">
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Settings
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Theme Tab */}
-        <TabsContent value="theme" className="mt-0">
-          <Card className="border shadow-sm">
-            <CardHeader>
-              <CardTitle>Form Appearance</CardTitle>
-              <CardDescription>Customize the visual style of your form</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-                <div className="space-y-3">
-                  <Label>Theme</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="relative">
-                      <Button variant="outline" className="h-20 w-full bg-background flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                        <span className="text-xs font-normal">Light</span>
-                        <div className="h-2 w-2 rounded-full bg-green-500 absolute top-2 right-2"></div>
-                      </Button>
-                    </div>
-                    <Button variant="outline" className="h-20 w-full bg-slate-900 text-white flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-xs font-normal">Dark</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-xs font-normal">Custom</span>
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Select the color theme for your form
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <Label>Font Style</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <Button variant="outline" className="h-20 w-full font-sans flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-lg">Aa</span>
-                      <span className="text-xs font-normal">Sans</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 w-full font-serif flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-lg">Aa</span>
-                      <span className="text-xs font-normal">Serif</span>
-                    </Button>
-                    <Button variant="outline" className="h-20 w-full font-mono flex flex-col items-center justify-center gap-2 hover:border-primary/50">
-                      <span className="text-lg">Aa</span>
-                      <span className="text-xs font-normal">Mono</span>
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Choose a font style that matches your brand
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <Label>Primary Color</Label>
-                  <div className="grid grid-cols-6 gap-2">
-                    <div className="h-10 w-full bg-blue-500 rounded-md cursor-pointer ring-2 ring-offset-2 ring-blue-500"></div>
-                    <div className="h-10 w-full bg-purple-500 rounded-md cursor-pointer"></div>
-                    <div className="h-10 w-full bg-pink-500 rounded-md cursor-pointer"></div>
-                    <div className="h-10 w-full bg-orange-500 rounded-md cursor-pointer"></div>
-                    <div className="h-10 w-full bg-green-500 rounded-md cursor-pointer"></div>
-                    <div className="h-10 w-full bg-slate-700 rounded-md cursor-pointer"></div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    This affects buttons, active elements and accents
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <Label>Border Style</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <Button variant="outline" className="h-16 w-full flex flex-col items-center justify-center gap-1 hover:border-primary/50">
-                      <div className="h-6 w-10 border rounded-md"></div>
-                      <span className="text-xs font-normal">Square</span>
-                    </Button>
-                    <Button variant="outline" className="h-16 w-full flex flex-col items-center justify-center gap-1 hover:border-primary/50">
-                      <div className="h-6 w-10 border rounded-lg"></div>
-                      <span className="text-xs font-normal">Rounded</span>
-                    </Button>
-                    <Button variant="outline" className="h-16 w-full flex flex-col items-center justify-center gap-1 hover:border-primary/50">
-                      <div className="h-6 w-10 border rounded-xl"></div>
-                      <span className="text-xs font-normal">Pill</span>
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Choose the border style for form elements
-                  </p>
-                </div>
-              </div>
-              
-              <div className="mt-8 bg-accent/10 p-4 rounded-md flex items-center gap-3">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <div>
-                  <h3 className="text-sm font-medium">Coming Soon</h3>
-                  <p className="text-xs text-muted-foreground">
-                    More advanced appearance settings will be available in a future update.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end pt-2">
-              <Button onClick={() => toast({ title: "Settings saved", description: "Theme settings have been saved successfully." })} size="sm">
-                <Save className="mr-2 h-4 w-4" />
-                Save Theme
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-};
-
-export default FormBuilder;
