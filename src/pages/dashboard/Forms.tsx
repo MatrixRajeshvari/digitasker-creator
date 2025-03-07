@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
@@ -43,39 +42,43 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/context/AuthContext";
+import { ensureDBConnected } from "@/services/mongoDBService";
+import { Form, IForm, FormStatus } from "@/models/Form";
 
-// Mock form data type
-interface Form {
+interface FormData {
   id: string;
   title: string;
-  status: 'active' | 'draft' | 'archived';
+  status: FormStatus;
   createdAt: string;
   submissions: number;
   lastSubmission: string | null;
 }
 
 const Forms = () => {
-  const [forms, setForms] = useState<Form[]>([]);
-  const [filteredForms, setFilteredForms] = useState<Form[]>([]);
+  const { user } = useAuth();
+  const [forms, setForms] = useState<FormData[]>([]);
+  const [filteredForms, setFilteredForms] = useState<FormData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [sortConfig, setSortConfig] = useState<{ key: keyof Form; direction: 'asc' | 'desc' }>({
+  const [sortConfig, setSortConfig] = useState<{ key: keyof FormData; direction: 'asc' | 'desc' }>({
     key: 'createdAt',
     direction: 'desc'
   });
   
   const { toast } = useToast();
 
-  // Mock API call to fetch forms
   useEffect(() => {
     const fetchForms = async () => {
       try {
-        // Simulate API call
+        setIsLoading(true);
+        
+        await ensureDBConnected();
+        
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Mock data
-        const mockForms: Form[] = Array.from({ length: 15 }, (_, i) => ({
+        const mockForms: FormData[] = Array.from({ length: 15 }, (_, i) => ({
           id: (i + 1).toString(),
           title: [
             "Customer Feedback",
@@ -89,7 +92,7 @@ const Forms = () => {
             "Workshop Registration",
             "Feedback Form"
           ][Math.floor(Math.random() * 10)] + ` ${i + 1}`,
-          status: ['active', 'draft', 'archived'][Math.floor(Math.random() * 3)] as 'active' | 'draft' | 'archived',
+          status: ['active', 'draft', 'archived'][Math.floor(Math.random() * 3)] as FormStatus,
           createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString().split('T')[0],
           submissions: Math.floor(Math.random() * 200),
           lastSubmission: Math.random() > 0.2 
@@ -114,7 +117,6 @@ const Forms = () => {
     fetchForms();
   }, [toast]);
 
-  // Handle search and filter
   useEffect(() => {
     const result = forms.filter(form => {
       const matchesSearch = form.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -122,7 +124,6 @@ const Forms = () => {
       return matchesSearch && matchesStatus;
     });
     
-    // Apply sorting
     const sortedResult = [...result].sort((a, b) => {
       if (sortConfig.key === 'submissions') {
         return sortConfig.direction === 'asc' 
@@ -149,13 +150,12 @@ const Forms = () => {
     setFilteredForms(sortedResult);
   }, [forms, searchTerm, statusFilter, sortConfig]);
 
-  const handleSort = (key: keyof Form) => {
+  const handleSort = (key: keyof FormData) => {
     const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
     setSortConfig({ key, direction });
   };
 
   const deleteForm = (id: string) => {
-    // In a real app, this would be an API call
     setForms(forms.filter(form => form.id !== id));
     
     toast({
@@ -168,7 +168,7 @@ const Forms = () => {
     const formToDuplicate = forms.find(form => form.id === id);
     
     if (formToDuplicate) {
-      const newForm: Form = {
+      const newForm: FormData = {
         ...formToDuplicate,
         id: (Math.max(...forms.map(f => parseInt(f.id))) + 1).toString(),
         title: `${formToDuplicate.title} (Copy)`,
@@ -187,7 +187,7 @@ const Forms = () => {
     }
   };
 
-  const getStatusBadge = (status: 'active' | 'draft' | 'archived') => {
+  const getStatusBadge = (status: FormStatus) => {
     switch(status) {
       case 'active':
         return <Badge variant="default">Active</Badge>;

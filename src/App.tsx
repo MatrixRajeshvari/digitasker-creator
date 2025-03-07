@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
+import { useEffect } from "react";
+import { connectDB } from "./services/mongoDBService";
 
 // Auth Pages
 import Login from "./pages/auth/Login";
@@ -30,46 +32,61 @@ import Reports from "./pages/dashboard/Reports";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            
-            {/* Dashboard Routes - Protected */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<DashboardLayout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/dashboard/forms" element={<Forms />} />
-                <Route path="/dashboard/forms/new" element={<FormBuilder />} />
-                <Route path="/dashboard/forms/:id/edit" element={<FormBuilder />} />
-                <Route path="/dashboard/forms/:id/responses" element={<FormResponses />} />
-                <Route path="/dashboard/scheduled-forms" element={<ScheduledForms />} />
-                <Route path="/dashboard/reports" element={<Reports />} />
-                <Route path="/dashboard/settings" element={<Settings />} />
-                <Route path="/dashboard/users" element={<UserManagement />} />
+const App = () => {
+  // Initialize MongoDB connection
+  useEffect(() => {
+    const initMongoDB = async () => {
+      try {
+        await connectDB();
+      } catch (error) {
+        console.error("Failed to connect to MongoDB:", error);
+      }
+    };
+
+    initMongoDB();
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              
+              {/* Dashboard Routes - Protected */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<DashboardLayout />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/dashboard/forms" element={<Forms />} />
+                  <Route path="/dashboard/forms/new" element={<FormBuilder />} />
+                  <Route path="/dashboard/forms/:id/edit" element={<FormBuilder />} />
+                  <Route path="/dashboard/forms/:id/responses" element={<FormResponses />} />
+                  <Route path="/dashboard/scheduled-forms" element={<ScheduledForms />} />
+                  <Route path="/dashboard/reports" element={<Reports />} />
+                  <Route path="/dashboard/settings" element={<Settings />} />
+                  <Route path="/dashboard/users" element={<UserManagement />} />
+                </Route>
               </Route>
-            </Route>
-            
-            {/* Form View Route (Public) */}
-            <Route path="/forms/:id" element={<ViewForm />} />
-            
-            {/* Catch All */}
-            <Route path="/404" element={<NotFound />} />
-            <Route path="*" element={<Navigate to="/404" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+              
+              {/* Form View Route (Public) */}
+              <Route path="/forms/:id" element={<ViewForm />} />
+              
+              {/* Catch All */}
+              <Route path="/404" element={<NotFound />} />
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
