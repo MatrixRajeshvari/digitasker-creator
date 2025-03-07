@@ -25,6 +25,7 @@ import FormResponses from "./pages/dashboard/FormResponses";
 import ViewForm from "./pages/dashboard/ViewForm";
 import Settings from "./pages/dashboard/Settings";
 import UserManagement from "./pages/dashboard/UserManagement";
+import ScheduledForms from "./pages/dashboard/ScheduledForms";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                 <Route path="/dashboard/forms/new" element={<FormBuilder />} />
                 <Route path="/dashboard/forms/:id/edit" element={<FormBuilder />} />
                 <Route path="/dashboard/forms/:id/responses" element={<FormResponses />} />
+                <Route path="/dashboard/scheduled-forms" element={<ScheduledForms />} />
                 <Route path="/dashboard/settings" element={<Settings />} />
                 <Route path="/dashboard/users" element={<UserManagement />} />
               </Route>

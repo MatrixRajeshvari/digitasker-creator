@@ -12,7 +12,8 @@ import {
   Sun, 
   Menu, 
   X,
-  PanelLeft
+  PanelLeft,
+  CalendarClock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
@@ -85,6 +86,12 @@ export default function DashboardLayout() {
       path: "/dashboard/forms",
       name: "Forms",
       icon: FileText,
+      requiredRole: UserRole.VIEWER,
+    },
+    {
+      path: "/dashboard/scheduled-forms",
+      name: "Scheduled Forms",
+      icon: CalendarClock,
       requiredRole: UserRole.VIEWER,
     },
     {
