@@ -1,4 +1,4 @@
-<lov-code>
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
@@ -914,4 +914,474 @@ const FormBuilder = () => {
                       {renderElementPreview(element)}
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Settings Tab */}
+        <TabsContent value="settings" className="mt-0">
+          <Card>
+            <CardHeader>
+              <CardTitle>Form Settings</CardTitle>
+              <CardDescription>
+                Configure general settings for your form
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="form-title">Form Title</Label>
+                <Input 
+                  id="form-title" 
+                  value={formData.title}
+                  onChange={e => updateFormMetadata('title', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="form-description">Description</Label>
+                <Input 
+                  id="form-description" 
+                  value={formData.description}
+                  onChange={e => updateFormMetadata('description', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="form-status">Status</Label>
+                <Select 
+                  value={formData.status}
+                  onValueChange={value => updateFormMetadata('status', value)}
+                >
+                  <SelectTrigger id="form-status">
+                    <SelectValue/>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Theme Tab */}
+        <TabsContent value="theme" className="mt-0">
+          <Card>
+            <CardHeader>
+              <CardTitle>Theme Settings</CardTitle>
+              <CardDescription>
+                Customize the appearance of your form
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="colors">
+                  <AccordionTrigger className="text-base font-medium">
+                    <div className="flex items-center gap-2">
+                      <Palette className="h-4 w-4" />
+                      Colors
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="formBackgroundColor">Form Background</Label>
+                        <div className="flex gap-2">
+                          <div 
+                            className="w-6 h-6 rounded-md border"
+                            style={{ backgroundColor: advancedAppearanceSettings.formBackgroundColor }}
+                          />
+                          <Input 
+                            id="formBackgroundColor"
+                            type="text"
+                            value={advancedAppearanceSettings.formBackgroundColor}
+                            onChange={e => handleAdvancedAppearanceChange('formBackgroundColor', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="formTextColor">Form Text</Label>
+                        <div className="flex gap-2">
+                          <div 
+                            className="w-6 h-6 rounded-md border"
+                            style={{ backgroundColor: advancedAppearanceSettings.formTextColor }}
+                          />
+                          <Input 
+                            id="formTextColor"
+                            type="text"
+                            value={advancedAppearanceSettings.formTextColor}
+                            onChange={e => handleAdvancedAppearanceChange('formTextColor', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="inputBackgroundColor">Input Background</Label>
+                        <div className="flex gap-2">
+                          <div 
+                            className="w-6 h-6 rounded-md border"
+                            style={{ backgroundColor: advancedAppearanceSettings.inputBackgroundColor }}
+                          />
+                          <Input 
+                            id="inputBackgroundColor"
+                            type="text"
+                            value={advancedAppearanceSettings.inputBackgroundColor}
+                            onChange={e => handleAdvancedAppearanceChange('inputBackgroundColor', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="inputBorderColor">Input Border</Label>
+                        <div className="flex gap-2">
+                          <div 
+                            className="w-6 h-6 rounded-md border"
+                            style={{ backgroundColor: advancedAppearanceSettings.inputBorderColor }}
+                          />
+                          <Input 
+                            id="inputBorderColor"
+                            type="text"
+                            value={advancedAppearanceSettings.inputBorderColor}
+                            onChange={e => handleAdvancedAppearanceChange('inputBorderColor', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="inputTextColor">Input Text</Label>
+                        <div className="flex gap-2">
+                          <div 
+                            className="w-6 h-6 rounded-md border"
+                            style={{ backgroundColor: advancedAppearanceSettings.inputTextColor }}
+                          />
+                          <Input 
+                            id="inputTextColor"
+                            type="text"
+                            value={advancedAppearanceSettings.inputTextColor}
+                            onChange={e => handleAdvancedAppearanceChange('inputTextColor', e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="typography">
+                  <AccordionTrigger className="text-base font-medium">
+                    <div className="flex items-center gap-2">
+                      <Type className="h-4 w-4" />
+                      Typography
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="customFont">Font Family</Label>
+                        <Select 
+                          value={advancedAppearanceSettings.customFont}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('customFont', value)}
+                        >
+                          <SelectTrigger id="customFont">
+                            <SelectValue placeholder="Select font" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="default">Default</SelectItem>
+                            <SelectItem value="serif">Serif</SelectItem>
+                            <SelectItem value="sans-serif">Sans Serif</SelectItem>
+                            <SelectItem value="monospace">Monospace</SelectItem>
+                            <SelectItem value="cursive">Cursive</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="layout">
+                  <AccordionTrigger className="text-base font-medium">
+                    <div className="flex items-center gap-2">
+                      <Layers className="h-4 w-4" />
+                      Layout
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="spacing">Element Spacing</Label>
+                        <Select 
+                          value={advancedAppearanceSettings.spacing}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('spacing', value)}
+                        >
+                          <SelectTrigger id="spacing">
+                            <SelectValue placeholder="Select spacing" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="compact">Compact</SelectItem>
+                            <SelectItem value="comfortable">Comfortable</SelectItem>
+                            <SelectItem value="spacious">Spacious</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="labelPosition">Label Position</Label>
+                        <Select 
+                          value={advancedAppearanceSettings.labelPosition}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('labelPosition', value)}
+                        >
+                          <SelectTrigger id="labelPosition">
+                            <SelectValue placeholder="Select position" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="top">Top</SelectItem>
+                            <SelectItem value="left">Left</SelectItem>
+                            <SelectItem value="hidden">Hidden</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="formAlignment">Form Alignment</Label>
+                        <Select 
+                          value={advancedAppearanceSettings.formAlignment}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('formAlignment', value)}
+                        >
+                          <SelectTrigger id="formAlignment">
+                            <SelectValue placeholder="Select alignment" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="left">Left</SelectItem>
+                            <SelectItem value="center">Center</SelectItem>
+                            <SelectItem value="right">Right</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <Label htmlFor="formShadowIntensity">Form Shadow</Label>
+                          <span className="text-xs text-muted-foreground">{advancedAppearanceSettings.formShadowIntensity}</span>
+                        </div>
+                        <Slider 
+                          id="formShadowIntensity"
+                          min={0} 
+                          max={10} 
+                          step={1}
+                          value={[advancedAppearanceSettings.formShadowIntensity]}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('formShadowIntensity', value[0])}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <Label htmlFor="fieldTransparency">Field Transparency</Label>
+                          <span className="text-xs text-muted-foreground">{advancedAppearanceSettings.fieldTransparency}%</span>
+                        </div>
+                        <Slider 
+                          id="fieldTransparency"
+                          min={0} 
+                          max={100} 
+                          step={5}
+                          value={[advancedAppearanceSettings.fieldTransparency]}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('fieldTransparency', value[0])}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="showSeparators">Show Field Separators</Label>
+                        <Switch 
+                          id="showSeparators"
+                          checked={advancedAppearanceSettings.showSeparators}
+                          onCheckedChange={(checked) => handleAdvancedAppearanceChange('showSeparators', checked)}
+                        />
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="buttons">
+                  <AccordionTrigger className="text-base font-medium">
+                    <div className="flex items-center gap-2">
+                      <CircleDot className="h-4 w-4" />
+                      Buttons
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="buttonStyle">Button Style</Label>
+                        <Select 
+                          value={advancedAppearanceSettings.buttonStyle}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('buttonStyle', value)}
+                        >
+                          <SelectTrigger id="buttonStyle">
+                            <SelectValue placeholder="Select style" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="filled">Filled</SelectItem>
+                            <SelectItem value="outline">Outline</SelectItem>
+                            <SelectItem value="minimal">Minimal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <Label htmlFor="buttonRoundness">Button Roundness</Label>
+                          <span className="text-xs text-muted-foreground">{advancedAppearanceSettings.buttonRoundness}</span>
+                        </div>
+                        <Slider 
+                          id="buttonRoundness"
+                          min={0} 
+                          max={10} 
+                          step={1}
+                          value={[advancedAppearanceSettings.buttonRoundness]}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('buttonRoundness', value[0])}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="buttonGradient">Button Gradient</Label>
+                        <Switch 
+                          id="buttonGradient"
+                          checked={advancedAppearanceSettings.buttonGradient}
+                          onCheckedChange={(checked) => handleAdvancedAppearanceChange('buttonGradient', checked)}
+                        />
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="effects">
+                  <AccordionTrigger className="text-base font-medium">
+                    <div className="flex items-center gap-2">
+                      <Sliders className="h-4 w-4" />
+                      Effects
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="animationLevel">Animation Level</Label>
+                        <Select 
+                          value={advancedAppearanceSettings.animationLevel}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('animationLevel', value)}
+                        >
+                          <SelectTrigger id="animationLevel">
+                            <SelectValue placeholder="Select level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="subtle">Subtle</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="icons">
+                  <AccordionTrigger className="text-base font-medium">
+                    <div className="flex items-center gap-2">
+                      <BoxSelect className="h-4 w-4" />
+                      Icons
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="formIconStyle">Icon Style</Label>
+                        <Select 
+                          value={advancedAppearanceSettings.formIconStyle}
+                          onValueChange={(value) => handleAdvancedAppearanceChange('formIconStyle', value)}
+                        >
+                          <SelectTrigger id="formIconStyle">
+                            <SelectValue placeholder="Select style" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="outlined">Outlined</SelectItem>
+                            <SelectItem value="filled">Filled</SelectItem>
+                            <SelectItem value="rounded">Rounded</SelectItem>
+                            <SelectItem value="minimal">Minimal</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              {/* Theme Preview */}
+              <div className="mt-8 pt-6 border-t">
+                <h3 className="text-lg font-medium mb-4">Style Preview</h3>
+                <div className="p-6 border rounded-md" style={{ 
+                  backgroundColor: advancedAppearanceSettings.formBackgroundColor,
+                  color: advancedAppearanceSettings.formTextColor,
+                  boxShadow: `0 ${advancedAppearanceSettings.formShadowIntensity * 2}px ${advancedAppearanceSettings.formShadowIntensity * 4}px rgba(0,0,0,${advancedAppearanceSettings.formShadowIntensity * 0.03})`,
+                }}>
+                  <div className="mb-4">
+                    <label className="block mb-2 font-medium">Sample Input</label>
+                    <div className="flex">
+                      <input 
+                        type="text" 
+                        className="w-full p-2 border rounded-md" 
+                        placeholder="Enter text..."
+                        style={{
+                          backgroundColor: advancedAppearanceSettings.inputBackgroundColor,
+                          borderColor: advancedAppearanceSettings.inputBorderColor,
+                          color: advancedAppearanceSettings.inputTextColor,
+                          opacity: 1 - (advancedAppearanceSettings.fieldTransparency / 100),
+                          borderBottomWidth: advancedAppearanceSettings.showSeparators ? '1px' : '0px',
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      className="px-4 py-2 rounded-md"
+                      style={{
+                        backgroundColor: advancedAppearanceSettings.buttonStyle === 'filled' ? 'rgb(var(--primary))' : 'transparent',
+                        borderWidth: advancedAppearanceSettings.buttonStyle === 'outline' ? '1px' : '0',
+                        borderColor: 'rgb(var(--primary))',
+                        color: advancedAppearanceSettings.buttonStyle === 'filled' ? 'white' : 'rgb(var(--primary))',
+                        borderRadius: `${advancedAppearanceSettings.buttonRoundness * 0.25}rem`,
+                        backgroundImage: advancedAppearanceSettings.buttonGradient ? 'linear-gradient(to right, rgb(var(--primary)), rgb(var(--primary-light)))' : 'none',
+                      }}
+                    >
+                      Sample Button
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={() => toast({
+                  title: "Theme updated",
+                  description: "Your form theme settings have been applied."
+                })}
+                className="ml-auto"
+              >
+                <Check className="mr-2 h-4 w-4" />
+                Apply Theme
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default FormBuilder;
 
