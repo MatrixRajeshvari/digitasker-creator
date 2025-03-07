@@ -13,7 +13,8 @@ import {
   Menu, 
   X,
   PanelLeft,
-  CalendarClock
+  CalendarClock,
+  BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
@@ -92,6 +93,12 @@ export default function DashboardLayout() {
       path: "/dashboard/scheduled-forms",
       name: "Scheduled Forms",
       icon: CalendarClock,
+      requiredRole: UserRole.VIEWER,
+    },
+    {
+      path: "/dashboard/reports",
+      name: "Reports",
+      icon: BarChart3,
       requiredRole: UserRole.VIEWER,
     },
     {
