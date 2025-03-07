@@ -1,8 +1,8 @@
 
 import mongoose from 'mongoose';
 
-// MongoDB connection string - in a real app, this should be in an environment variable
-const MONGODB_URI = 'mongodb://localhost:27017/formflow';
+// MongoDB connection string - provided by the user
+const MONGODB_URI = 'mongodb+srv://rajeshvaris:ZW8zRQXQHlMIjDA1@formbuildercluster.e7gnk.mongodb.net/FormBuilderDB';
 
 // Function to connect to MongoDB
 export const connectDB = async () => {
