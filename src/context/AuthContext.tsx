@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ensureDBConnected } from "@/services/mongoDBService";
@@ -66,15 +65,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Connect to MongoDB
+      // Connect to MongoDB (this will use mock connection in browser)
       await ensureDBConnected();
 
-      // This would be an API call in a real app
-      // For demo purposes, we're querying MongoDB directly from the frontend
-      // In a production app, this should be done via a secure API
-
-      // Since we are in the browser environment, direct MongoDB queries won't work
-      // For demonstration, we'll use mock data that simulates a MongoDB response
+      // In a browser environment, we'll use mock authentication 
+      // for demo purposes since we can't connect to MongoDB directly
       if (email === "admin@example.com" && password === "password") {
         const mockUser: User = {
           id: "1",
@@ -96,7 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       // Simulate different user roles based on email
-      if (email.includes("editor")) {
+      if (email.includes("editor") && password === "password") {
         const mockUser: User = {
           id: "2",
           email,
@@ -116,7 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return;
       }
       
-      if (email.includes("viewer")) {
+      if (email.includes("viewer") && password === "password") {
         const mockUser: User = {
           id: "3",
           email,
@@ -153,11 +148,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Connect to MongoDB
+      // Connect to MongoDB (this will use mock connection in browser)
       await ensureDBConnected();
 
-      // This would be an API call in a real app
-      // For demo purposes, we're simulating MongoDB response
+      // For browser environment, create a mock user
       const mockUser: User = {
         id: Date.now().toString(),
         email,

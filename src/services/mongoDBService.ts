@@ -12,16 +12,17 @@ let mockConnectionState = 0; // 0 = disconnected, 1 = connected
 
 // Function to connect to MongoDB
 export const connectDB = async () => {
-  // In browser environment, we can't use mongoose directly
-  // if (isBrowser) {
-  //   console.log('Browser environment detected, using mock MongoDB connection');
-  //   mockConnectionState = 1;
-  //   return;
-  // }
+  // In browser environment, we just use mock connection
+  if (isBrowser) {
+    console.log('Browser environment detected, using mock MongoDB connection');
+    mockConnectionState = 1;
+    return;
+  }
 
-  // if (mongoose.connection.readyState >= 1) {
-  //   return;
-  // }
+  // Server-side connection
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
 
   try {
     await mongoose.connect(MONGODB_URI);
