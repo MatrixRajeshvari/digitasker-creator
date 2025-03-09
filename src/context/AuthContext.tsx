@@ -1,6 +1,7 @@
+
 import { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { ensureDBConnected } from "@/services/mongoDBService";
+import { ensureDBConnected, isConnected } from "@/services/mongoDBService";
 import { User, IUser } from "@/models/User";
 
 // Define user roles
@@ -47,7 +48,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
-          // In a real app, validate the token with your backend here
           setUser(JSON.parse(storedUser));
         }
       } catch (error) {
@@ -65,11 +65,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Connect to MongoDB (this will use mock connection in browser)
+      // Ensure DB connection (this will use mock connection in browser)
       await ensureDBConnected();
+      
+      if (!isConnected()) {
+        throw new Error("Database connection failed. Please try again later.");
+      }
 
-      // In a browser environment, we'll use mock authentication 
-      // for demo purposes since we can't connect to MongoDB directly
+      // Mock authentication for demo purposes
       if (email === "admin@example.com" && password === "password") {
         const mockUser: User = {
           id: "1",
@@ -148,8 +151,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Connect to MongoDB (this will use mock connection in browser)
+      // Ensure DB connection (this will use mock connection in browser)
       await ensureDBConnected();
+      
+      if (!isConnected()) {
+        throw new Error("Database connection failed. Please try again later.");
+      }
 
       // For browser environment, create a mock user
       const mockUser: User = {

@@ -46,9 +46,8 @@ const AppContent = () => {
       } catch (error) {
         console.error("Failed to connect to MongoDB:", error);
         toast({
-          title: "Database Connection Failed",
-          description: "Using mock data instead. This is expected in the browser environment.",
-          variant: "destructive",
+          title: "Database Connection Notice",
+          description: "Running in browser environment with mock data",
         });
         // Even though there was an error, we're using mock data, so mark as initialized
         setDbInitialized(true);
@@ -62,7 +61,7 @@ const AppContent = () => {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        <span className="ml-2">Initializing database connection...</span>
+        <span className="ml-2">Initializing application...</span>
       </div>
     );
   }

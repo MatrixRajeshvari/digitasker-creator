@@ -20,11 +20,11 @@ export const connectDB = async () => {
   }
 
   // Server-side connection
-  if (mongoose.connection.readyState >= 1) {
-    return;
-  }
-
   try {
+    if (mongoose.connection.readyState >= 1) {
+      return;
+    }
+    
     await mongoose.connect(MONGODB_URI);
     console.log('MongoDB connected successfully');
   } catch (error) {
@@ -41,11 +41,11 @@ export const disconnectDB = async () => {
     return;
   }
 
-  if (mongoose.connection.readyState === 0) {
-    return;
-  }
-
   try {
+    if (mongoose.connection.readyState === 0) {
+      return;
+    }
+    
     await mongoose.disconnect();
     console.log('MongoDB disconnected successfully');
   } catch (error) {
@@ -63,8 +63,18 @@ export const ensureDBConnected = async () => {
     return;
   }
 
-  if (mongoose.connection.readyState === 0) {
-    await connectDB();
+  try {
+    if (mongoose.connection.readyState === 0) {
+      await connectDB();
+    }
+  } catch (error) {
+    console.error('Failed to ensure DB connection:', error);
+    // In browser environment, we'll still proceed with mock state
+    if (isBrowser) {
+      mockConnectionState = 1;
+    } else {
+      throw error;
+    }
   }
 };
 
@@ -73,5 +83,11 @@ export const isConnected = () => {
   if (isBrowser) {
     return mockConnectionState >= 1;
   }
-  return mongoose.connection.readyState >= 1;
+  
+  try {
+    return mongoose.connection.readyState >= 1;
+  } catch (error) {
+    console.error('Error checking connection status:', error);
+    return false;
+  }
 };
